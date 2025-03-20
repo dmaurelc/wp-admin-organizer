@@ -3,7 +3,7 @@
  * Plugin Name: WP Admin Organizer
  * Plugin URI: https://example.com/wp-admin-organizer
  * Description: Organize WordPress admin menu items with drag and drop functionality, add separators and text separators.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Daniel Maurel
  * Author URI: https://dmaurel.cl
  * Text Domain: wp-admin-organizer
@@ -17,8 +17,24 @@ if (!defined('WPINC')) {
     die;
 }
 
+// Load plugin text domain
+add_action('plugins_loaded', 'wp_admin_organizer_load_textdomain');
+
+/**
+ * Load plugin textdomain.
+ *
+ * @since 1.0.0
+ */
+function wp_admin_organizer_load_textdomain() {
+    load_plugin_textdomain(
+        'wp-admin-organizer',
+        false,
+        dirname(plugin_basename(__FILE__)) . '/languages/'
+    );
+}
+
 // Define plugin constants
-define('WP_ADMIN_ORGANIZER_VERSION', '1.0.0');
+define('WP_ADMIN_ORGANIZER_VERSION', '1.0.1');
 define('WP_ADMIN_ORGANIZER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WP_ADMIN_ORGANIZER_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WP_ADMIN_ORGANIZER_PLUGIN_BASENAME', plugin_basename(__FILE__));

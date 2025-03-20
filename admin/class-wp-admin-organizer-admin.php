@@ -381,7 +381,7 @@ class WP_Admin_Organizer_Admin {
             // Add the logo HTML to the admin footer so it can be moved to the top of the menu via JavaScript
             add_action('admin_footer', function() use ($logo_url) {
                 echo '<div class="wp-admin-organizer-admin-logo">';                
-                echo '<img src="' . esc_url($logo_url) . '" alt="Admin Logo">';                
+                echo '<img src="' . esc_url($logo_url) . '" alt="' . esc_attr__('Admin Logo', 'wp-admin-organizer') . '">';                
                 echo '</div>';
                 
                 // Add JavaScript to move the logo to the top of the menu

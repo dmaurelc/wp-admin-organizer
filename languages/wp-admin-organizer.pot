@@ -1,0 +1,57 @@
+# Copyright (C) 2023 Daniel Maurel
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Admin Organizer 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-admin-organizer\n"
+"POT-Creation-Date: 2023-01-01 00:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: admin/class-wp-admin-organizer-admin.php:123
+msgid "Menu order saved successfully!"
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:124
+msgid "Error saving menu order."
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:125
+msgid "Separator added successfully!"
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:126
+msgid "Error adding separator."
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:127
+msgid "Are you sure you want to reset the menu to default? This cannot be undone."
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:128
+msgid "Select Logo"
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:129
+msgid "Use this logo"
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:130
+msgid "Error saving logo."
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:150
+msgid "WP Admin Organizer"
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:151
+msgid "Admin Organizer"
+msgstr ""
+
+#: admin/class-wp-admin-organizer-admin.php:456
+msgid "Admin Logo"
+msgstr ""

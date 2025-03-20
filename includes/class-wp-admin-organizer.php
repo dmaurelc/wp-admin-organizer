@@ -45,6 +45,15 @@ class WP_Admin_Organizer {
     protected $version;
 
     /**
+     * The domain specified for this plugin for internationalization.
+     *
+     * @since    1.0.0
+     * @access   protected
+     * @var      string    $text_domain    The domain identifier for this plugin.
+     */
+    protected $text_domain;
+
+    /**
      * Define the core functionality of the plugin.
      *
      * Set the plugin name and the plugin version that can be used throughout the plugin.
@@ -59,8 +68,10 @@ class WP_Admin_Organizer {
             $this->version = '1.0.0';
         }
         $this->plugin_name = 'wp-admin-organizer';
+        $this->text_domain = 'wp-admin-organizer';
 
         $this->load_dependencies();
+        $this->set_locale();
         $this->define_admin_hooks();
     }
 
@@ -88,6 +99,32 @@ class WP_Admin_Organizer {
         require_once WP_ADMIN_ORGANIZER_PLUGIN_DIR . 'admin/class-wp-admin-organizer-admin.php';
 
         $this->loader = new WP_Admin_Organizer_Loader();
+    }
+
+    /**
+     * Define the locale for this plugin for internationalization.
+     *
+     * Uses the WP_Admin_Organizer_i18n class in order to set the domain and to register the hook
+     * with WordPress.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function set_locale() {
+        $this->loader->add_action('plugins_loaded', $this, 'load_plugin_textdomain');
+    }
+
+    /**
+     * Load the plugin text domain for translation.
+     *
+     * @since    1.0.0
+     */
+    public function load_plugin_textdomain() {
+        load_plugin_textdomain(
+            $this->text_domain,
+            false,
+            dirname(dirname(plugin_basename(__FILE__))) . '/languages/'
+        );
     }
 
     /**
@@ -158,5 +195,15 @@ class WP_Admin_Organizer {
      */
     public function get_version() {
         return $this->version;
+    }
+
+    /**
+     * Retrieve the text domain of the plugin.
+     *
+     * @since     1.0.0
+     * @return    string    The text domain of the plugin.
+     */
+    public function get_text_domain() {
+        return $this->text_domain;
     }
 }
