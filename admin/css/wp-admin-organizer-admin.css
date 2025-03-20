@@ -1,0 +1,533 @@
+/**
+ * Admin styles for the WP Admin Organizer plugin
+ *
+ * @package    WP_Admin_Organizer
+ * @subpackage WP_Admin_Organizer/admin/css
+ */
+
+/* Admin page container */
+.wp-admin-organizer-container {
+  margin: 20px 0;
+  max-width: 100%;
+  padding: 0 20px;
+}
+
+/* Admin page header */
+.wp-admin-organizer-header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e2e4e7;
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.wp-admin-organizer-header h1 {
+  margin-bottom: 12px;
+  color: #1d2327;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.wp-admin-organizer-header p {
+  color: #50575e;
+  font-size: 14px;
+  margin-top: 0;
+}
+
+/* Content layout */
+.wp-admin-organizer-content {
+  display: flex;
+  gap: 25px;
+  flex-wrap: nowrap;
+}
+
+/* Menu items container */
+.wp-admin-organizer-menu-items {
+  background: #fff;
+  border: 1px solid #dcdcde;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  margin-bottom: 20px;
+  flex: 1;
+  min-width: 500px;
+  /* Remove max-height and overflow-y to eliminate scrolling */
+}
+
+/* Sidebar */
+.wp-admin-organizer-sidebar {
+  width: 350px;
+  position: sticky;
+  top: 32px;
+  align-self: flex-start;
+}
+
+/* Menu items list */
+.wp-admin-organizer-menu-list {
+  margin: 0;
+  padding: 0;
+}
+
+/* Menu item */
+.wp-admin-organizer-menu-item {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  padding: 14px 18px;
+  cursor: move;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  position: relative;
+}
+
+.wp-admin-organizer-menu-item:before,
+.wp-admin-organizer-separator-item:before {
+  content: "≡";
+  font-size: 18px;
+  color: #8c8f94;
+  margin-right: 10px;
+  cursor: move;
+}
+
+.wp-admin-organizer-menu-item:hover:before,
+.wp-admin-organizer-separator-item:hover:before {
+  color: #2271b1;
+}
+
+.wp-admin-organizer-menu-item:hover {
+  background: #f0f6fc;
+  border-color: #8c8f94;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.wp-admin-organizer-menu-item.ui-sortable-helper {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: #2271b1;
+}
+
+.wp-admin-organizer-menu-item.ui-sortable-placeholder {
+  border: 2px dashed #c3c4c7;
+  background: #f6f7f7;
+  visibility: visible !important;
+  height: 44px;
+  border-radius: 6px;
+}
+
+/* Menu item title */
+.wp-admin-organizer-menu-item-title {
+  font-weight: 600;
+  color: #1d2327;
+}
+
+/* Separator item */
+.wp-admin-organizer-separator-item {
+  background: #f0f0f0;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  cursor: move;
+  position: relative;
+}
+
+.wp-admin-organizer-separator-item.text-separator {
+  background: #e8f0f7;
+  border-color: #c5d9ed;
+}
+
+.wp-admin-organizer-separator-item-title {
+  font-style: italic;
+  color: #50575e;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.wp-admin-organizer-separator-item.text-separator
+  .wp-admin-organizer-separator-item-title:hover {
+  color: #2271b1;
+  text-decoration: underline;
+}
+
+/* Inline editing for text separators */
+.edit-separator-text {
+  padding: 5px 8px;
+  border-radius: 4px;
+  border: 1px solid #8c8f94;
+  font-size: 13px;
+  width: 200px;
+  margin-right: 10px;
+}
+
+/* Add separator form */
+.wp-admin-organizer-add-separator {
+  padding: 25px;
+  background: #fff;
+  border: 1px solid #dcdcde;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.wp-admin-organizer-add-separator h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.wp-admin-organizer-add-separator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.wp-admin-organizer-add-separator-form .form-field {
+  margin-bottom: 0;
+}
+
+.wp-admin-organizer-add-separator-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #1d2327;
+  text-align: left;
+}
+
+.wp-admin-organizer-add-separator-form select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #8c8f94;
+  box-shadow: 0 0 0 transparent;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  font-size: 14px;
+  line-height: 2;
+  min-height: 30px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%206l5%205%205-5%202%201-7%207-7-7%202-1z%22%20fill%3D%22%23555%22%2F%3E%3C%2Fsvg%3E");
+  background-position: right 5px top 55%;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 30px;
+}
+
+.wp-admin-organizer-add-separator-form input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #8c8f94;
+  box-shadow: 0 0 0 transparent;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  font-size: 14px;
+  line-height: 2;
+  min-height: 30px;
+}
+
+.wp-admin-organizer-add-separator-form select:focus,
+.wp-admin-organizer-add-separator-form input[type="text"]:focus {
+  border-color: #2271b1;
+  box-shadow: 0 0 0 1px #2271b1;
+  outline: 2px solid transparent;
+}
+
+.wp-admin-organizer-add-separator-form .text-field {
+  display: none;
+  opacity: 0;
+  height: 0;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.wp-admin-organizer-add-separator-form .text-field.visible {
+  display: block;
+  opacity: 1;
+  height: auto;
+  margin-top: 5px;
+}
+
+.wp-admin-organizer-add-separator-form .description {
+  font-size: 12px;
+  color: #646970;
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+.wp-admin-organizer-add-separator-form .button {
+  margin-top: 10px;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  height: 40px;
+  line-height: 38px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #2271b1;
+  color: #fff;
+  border-color: #2271b1;
+  transition: all 0.2s ease;
+}
+
+.wp-admin-organizer-add-separator-form .button:hover {
+  background-color: #135e96;
+  border-color: #135e96;
+}
+
+/* Buttons */
+.wp-admin-organizer-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.wp-admin-organizer-buttons .button {
+  padding: 0 15px;
+  height: 35px;
+  line-height: 33px;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.wp-admin-organizer-buttons .button-primary {
+  background: #2271b1;
+  border-color: #2271b1;
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.wp-admin-organizer-buttons .button-primary:hover {
+  background: #135e96;
+  border-color: #135e96;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Dialog */
+.wp-admin-organizer-dialog {
+  display: none;
+}
+
+/* Settings Container in Sidebar */
+.wp-admin-organizer-settings-container {
+  background: #fff;
+  border: 1px solid #dcdcde;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  margin-bottom: 20px;
+}
+
+.wp-admin-organizer-settings-section {
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #f0f0f1;
+}
+
+.wp-admin-organizer-settings-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.wp-admin-organizer-settings-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #1d2327;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.wp-admin-organizer-settings-section .button {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  height: 40px;
+  line-height: 38px;
+}
+
+/* Logo upload section */
+.wp-admin-organizer-logo-form {
+  margin-top: 10px;
+}
+
+.logo-preview-container {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-preview {
+  max-width: 160px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Success Modal */
+.wp-admin-organizer-success-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.wp-admin-organizer-success-modal.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.wp-admin-organizer-success-modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.wp-admin-organizer-success-modal.visible
+  .wp-admin-organizer-success-modal-content {
+  transform: translateY(0);
+}
+
+.wp-admin-organizer-success-modal-icon {
+  width: 60px;
+  height: 60px;
+  background: #ebf9eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.wp-admin-organizer-success-modal-icon svg {
+  width: 30px;
+  height: 30px;
+  fill: #46b450;
+}
+
+.wp-admin-organizer-success-modal h3 {
+  margin: 0 0 10px;
+  color: #1d2327;
+  font-size: 20px;
+}
+
+.wp-admin-organizer-success-modal p {
+  margin: 0 0 20px;
+  color: #50575e;
+}
+
+.wp-admin-organizer-success-modal button {
+  background: #2271b1;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.wp-admin-organizer-success-modal button:hover {
+  background: #135e96;
+}
+
+/* Remove separator link */
+.remove-separator {
+  color: #b32d2e;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+.remove-separator:hover {
+  background: #b32d2e;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive */
+@media screen and (max-width: 960px) {
+  .wp-admin-organizer-content {
+    flex-direction: column;
+  }
+
+  .wp-admin-organizer-sidebar {
+    width: 100%;
+  }
+
+  .wp-admin-organizer-menu-items {
+    min-width: auto;
+  }
+}
+
+@media screen and (max-width: 782px) {
+  .wp-admin-organizer-header h1 {
+    font-size: 22px;
+  }
+
+  .wp-admin-organizer-menu-items,
+  .wp-admin-organizer-add-separator {
+    padding: 20px;
+  }
+
+  .wp-admin-organizer-add-separator-form {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .wp-admin-organizer-add-separator-form .form-field {
+    width: 100%;
+  }
+
+  .wp-admin-organizer-add-separator-form select,
+  .wp-admin-organizer-add-separator-form input[type="text"] {
+    max-width: 100%;
+  }
+
+  .wp-admin-organizer-menu-item,
+  .wp-admin-organizer-separator-item {
+    padding: 12px 15px;
+  }
+}
