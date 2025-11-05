@@ -163,6 +163,12 @@ class WP_Admin_Organizer_Admin {
             'wp_admin_organizer_submenu_order',
             array('sanitize_callback' => array($this, 'sanitize_submenu_order'))
         );
+
+        register_setting(
+            'wp_admin_organizer_settings',
+            'wp_admin_organizer_custom_icons',
+            array('sanitize_callback' => array($this, 'sanitize_renamed_items'))
+        );
     }
 
     /**
@@ -298,6 +304,9 @@ class WP_Admin_Organizer_Admin {
         // Get saved submenu order
         $saved_submenu_order = get_option('wp_admin_organizer_submenu_order', array());
 
+        // Get custom icons
+        $custom_icons = get_option('wp_admin_organizer_custom_icons', array());
+
         include_once WP_ADMIN_ORGANIZER_PLUGIN_DIR . 'admin/partials/wp-admin-organizer-admin-display.php';
     }
 
@@ -370,6 +379,15 @@ class WP_Admin_Organizer_Admin {
 
         // Save submenu order
         update_option('wp_admin_organizer_submenu_order', $submenu_order);
+
+        // Get custom icons from POST data
+        $custom_icons = isset($_POST['custom_icons']) ? $_POST['custom_icons'] : array();
+
+        // Sanitize custom icons
+        $custom_icons = $this->sanitize_renamed_items($custom_icons);
+
+        // Save custom icons
+        update_option('wp_admin_organizer_custom_icons', $custom_icons);
 
         wp_send_json_success('Menu order saved successfully');
     }
@@ -461,6 +479,7 @@ class WP_Admin_Organizer_Admin {
             'renamed_items' => get_option('wp_admin_organizer_renamed_items', array()),
             'favorite_items' => get_option('wp_admin_organizer_favorite_items', array()),
             'submenu_order' => get_option('wp_admin_organizer_submenu_order', array()),
+            'custom_icons' => get_option('wp_admin_organizer_custom_icons', array()),
             'version' => WP_ADMIN_ORGANIZER_VERSION,
             'exported_at' => current_time('mysql')
         );
@@ -529,6 +548,11 @@ class WP_Admin_Organizer_Admin {
             update_option('wp_admin_organizer_submenu_order', $this->sanitize_submenu_order($config_data['submenu_order']));
         }
 
+        // Import custom icons
+        if (isset($config_data['custom_icons'])) {
+            update_option('wp_admin_organizer_custom_icons', $this->sanitize_renamed_items($config_data['custom_icons']));
+        }
+
         wp_send_json_success('Configuration imported successfully');
     }
 
@@ -558,6 +582,9 @@ class WP_Admin_Organizer_Admin {
 
         // Get favorite items
         $favorite_items = get_option('wp_admin_organizer_favorite_items', array());
+
+        // Get custom icons
+        $custom_icons = get_option('wp_admin_organizer_custom_icons', array());
 
         // If we have a saved menu order, reorganize the menu
         if (!empty($saved_menu_order)) {
@@ -635,6 +662,11 @@ class WP_Admin_Organizer_Admin {
                         // Apply renamed title if exists
                         if (isset($renamed_items[$item_id])) {
                             $item[0] = $renamed_items[$item_id];
+                        }
+
+                        // Apply custom icon if exists
+                        if (isset($custom_icons[$item_id]) && !empty($custom_icons[$item_id])) {
+                            $item[6] = $custom_icons[$item_id];
                         }
 
                         // Add the item to the new menu at the next position

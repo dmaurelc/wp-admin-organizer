@@ -4,6 +4,23 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-11-05
+### Added
+- **Reorganize Submenus**: Drag and drop support for submenu items within each menu
+- Submenus now display under their parent menu items in configuration
+- Submenu order persists and applies to admin menu
+- **Custom Icons (Backend)**: Infrastructure for custom menu icons using Dashicons
+- Icons can be set via data and are applied to menu items
+- All new features included in export/import
+
+### Technical
+- Added `wp_admin_organizer_submenu_order` option for storing submenu arrangements
+- Added `wp_admin_organizer_custom_icons` option for storing custom icons
+- New method `reorganize_submenus()` to apply submenu ordering
+- Submenu drag & drop with jQuery UI Sortable
+- Complete CSS styles for submenu lists and items
+- Enhanced export/import to include submenus and icons
+
 ## [1.2.0] - 2025-11-05
 ### Added
 - **Favorites/Quick Access functionality**: Mark menu items as favorites with star icon

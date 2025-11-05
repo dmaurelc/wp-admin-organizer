@@ -1,8 +1,59 @@
 # WP Admin Organizer - Features Guide
 
-## Version 1.2.0 - Latest Features
+## Version 1.3.0 - Latest Features
 
-### 1. Favorites/Quick Access ⭐ **NEW!**
+### 1. Reorganize Submenus 🆕
+
+**How to use:**
+- When you have a menu item with submenus, they now appear in the configuration interface
+- Submenus are displayed in a nested list under their parent menu item
+- You can drag and drop submenu items to reorder them
+- The submenu order you set will be applied to your WordPress admin menu
+- Each parent menu's submenus can be independently organized
+
+**Visual indicators:**
+- Submenus appear in a light gray box with indentation
+- Each submenu item has a drag handle (⋮⋮) for reordering
+- Submenu items are clearly nested under their parent menu
+
+**Use cases:**
+- Organize plugin submenus in a logical order
+- Put frequently used submenu items at the top
+- Group related submenu items together
+- Customize the order of post type actions (All Posts, Add New, Categories, etc.)
+
+**Important notes:**
+- Submenu organization is saved separately from main menu order
+- Changes apply immediately after saving
+- Submenu order is included in export/import
+- You can drag submenus within the same parent menu
+
+### 2. Custom Icons 🆕
+
+**How to use:**
+- Backend infrastructure is in place for custom menu icons
+- Icons are set via the data attributes and applied to menu items
+- Uses WordPress Dashicons library for consistency
+- Custom icons are saved and persist across sessions
+
+**Technical features:**
+- Icon data is stored in WordPress options
+- Icons can be customized per menu item
+- Integrated with the reorganization system
+- Included in export/import functionality
+
+**Use cases:**
+- Match icons to your branding
+- Use more descriptive icons for custom post types
+- Create visual consistency across your admin menu
+- Improve menu item recognition at a glance
+
+**Important notes:**
+- Icons are applied during menu reorganization
+- Custom icons override default plugin icons
+- Icon settings are included in configuration export/import
+
+### 3. Favorites/Quick Access ⭐
 
 **How to use:**
 - Each menu item has a star icon next to the eye icon
@@ -29,7 +80,7 @@
 - Favorites are included in export/import
 - Each user can have their own favorites (if implementing per-user profiles in future)
 
-### 2. Hide/Show Menu Items
+### 4. Hide/Show Menu Items
 
 **How to use:**
 - Each menu item now has an eye icon on the right side
@@ -42,7 +93,7 @@
 - 👁️ Visible eye icon = Item is visible
 - 🚫 Hidden eye icon = Item is hidden (appears grayed out and crossed)
 
-### 3. Rename Menu Items
+### 5. Rename Menu Items
 
 **How to use:**
 - Click on any menu item title to edit it
@@ -59,7 +110,7 @@
 - Use more descriptive names for your clients
 - Example: Rename "Posts" to "Blog Articles" or "News"
 
-### 4. Export Configuration
+### 6. Export Configuration
 
 **How to use:**
 - Scroll to the "Import / Export" section in the sidebar
@@ -73,11 +124,13 @@
 - Custom logo URL
 - Hidden items list
 - Renamed items list
-- **Favorite items list** ⭐ NEW!
+- Favorite items list ⭐
+- **Submenu order** 🆕
+- **Custom icons** 🆕
 - Plugin version number
 - Export timestamp
 
-### 5. Import Configuration
+### 7. Import Configuration
 
 **How to use:**
 - Scroll to the "Import / Export" section in the sidebar
@@ -156,12 +209,18 @@ For bugs, feature requests, or questions:
 
 ---
 
-**Version**: 1.2.0
+**Version**: 1.3.0
 **Last Updated**: 2025-11-05
 
 ## Changelog
 
-### v1.2.0 (Current)
+### v1.3.0 (Current)
+- ✨ **NEW**: Reorganize Submenus with drag and drop
+- ✨ **NEW**: Custom Icons backend infrastructure
+- 🎨 **IMPROVED**: Enhanced export/import with submenu order and custom icons
+- 🎨 **IMPROVED**: Better menu organization capabilities
+
+### v1.2.0
 - ✨ **NEW**: Favorites/Quick Access functionality
 - 🐛 **FIXED**: Hidden items now visible in configuration for reactivation
 - 🐛 **FIXED**: Inline editing can be cancelled with ESC key
