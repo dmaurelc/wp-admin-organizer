@@ -15,16 +15,28 @@
 /* Admin page header */
 .wp-admin-organizer-header {
   margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e2e4e7;
   background-color: #fff;
   padding: 20px 30px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.wp-admin-organizer-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.wp-admin-organizer-header-title {
+  flex: 1;
+  min-width: 300px;
+}
+
 .wp-admin-organizer-header h1 {
   margin-bottom: 12px;
+  margin-top: 0;
   color: #1d2327;
   font-size: 24px;
   font-weight: 500;
@@ -34,6 +46,41 @@
   color: #50575e;
   font-size: 14px;
   margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Role selector */
+.wp-admin-organizer-role-selector {
+  background: #f6f7f7;
+  padding: 15px 20px;
+  border-radius: 6px;
+  border: 1px solid #dcdcde;
+  min-width: 280px;
+}
+
+.wp-admin-organizer-role-selector label {
+  display: block;
+  font-weight: 600;
+  color: #1d2327;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.wp-admin-organizer-role-selector select {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border: 1px solid #8c8f94;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.wp-admin-organizer-role-selector .description {
+  display: block;
+  font-size: 12px;
+  color: #646970;
+  font-style: italic;
+  line-height: 1.4;
 }
 
 /* Content layout */
@@ -54,6 +101,53 @@
   flex: 1;
   min-width: 500px;
   /* Remove max-height and overflow-y to eliminate scrolling */
+}
+
+/* Menu header with search */
+.wp-admin-organizer-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.wp-admin-organizer-menu-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Search container */
+.wp-admin-organizer-search-container {
+  position: relative;
+  min-width: 250px;
+  flex: 1;
+  max-width: 400px;
+}
+
+.wp-admin-organizer-search-container input {
+  width: 100%;
+  padding: 8px 35px 8px 12px;
+  border: 1px solid #8c8f94;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.wp-admin-organizer-search-container input:focus {
+  border-color: #2271b1;
+  outline: none;
+  box-shadow: 0 0 0 1px #2271b1;
+}
+
+.wp-admin-organizer-search-container .dashicons {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8c8f94;
+  pointer-events: none;
 }
 
 /* Sidebar */

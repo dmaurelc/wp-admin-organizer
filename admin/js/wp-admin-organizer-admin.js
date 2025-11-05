@@ -44,6 +44,53 @@
       },
     });
 
+    // Handle role selector change
+    $("#role-selector").on("change", function () {
+      var selectedRole = $(this).val();
+      var currentUrl = window.location.href;
+      var newUrl;
+
+      // Check if URL already has role parameter
+      if (currentUrl.indexOf("role=") > -1) {
+        // Replace existing role parameter
+        newUrl = currentUrl.replace(/role=[^&]*/, "role=" + selectedRole);
+      } else {
+        // Add role parameter
+        var separator = currentUrl.indexOf("?") > -1 ? "&" : "?";
+        newUrl = currentUrl + separator + "role=" + selectedRole;
+      }
+
+      // Reload page with new role
+      window.location.href = newUrl;
+    });
+
+    // Handle menu search/filter
+    $("#menu-search").on("keyup", function () {
+      var searchTerm = $(this).val().toLowerCase().trim();
+
+      if (searchTerm === "") {
+        // Show all items when search is empty
+        $(".wp-admin-organizer-menu-item, .wp-admin-organizer-separator-item").show();
+      } else {
+        // Filter menu items
+        $(".wp-admin-organizer-menu-item").each(function () {
+          var $item = $(this);
+          var title = $item.find(".wp-admin-organizer-menu-item-title").text().toLowerCase();
+          var menuId = $item.data("menu-id");
+
+          // Check if title or menu ID contains search term
+          if (title.indexOf(searchTerm) > -1 || (menuId && menuId.toString().toLowerCase().indexOf(searchTerm) > -1)) {
+            $item.show();
+          } else {
+            $item.hide();
+          }
+        });
+
+        // Also filter separators (hide all during search for cleaner view)
+        $(".wp-admin-organizer-separator-item").hide();
+      }
+    });
+
     // Handle separator type change
     $("#separator-type").on("change", function () {
       if ($(this).val() === "text") {
@@ -507,6 +554,9 @@
       }
     });
 
+    // Get the current role we're editing
+    var currentRole = $("#role-selector").val() || "administrator";
+
     // Send the AJAX request
     $.ajax({
       url: wp_admin_organizer.ajax_url,
@@ -514,6 +564,7 @@
       data: {
         action: "save_menu_order",
         nonce: wp_admin_organizer.nonce,
+        role: currentRole,
         menu_order: menuItems,
         separators: separators,
         hidden_items: hiddenItems,
