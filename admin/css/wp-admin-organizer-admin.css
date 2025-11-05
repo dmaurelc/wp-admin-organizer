@@ -202,7 +202,7 @@
   color: #2271b1;
 }
 
-.wp-admin-organizer-menu-item:before,
+/* Separator item drag handle - menu items use .wp-admin-organizer-drag-handle instead */
 .wp-admin-organizer-separator-item:before {
   content: "≡";
   font-size: 18px;
@@ -211,7 +211,6 @@
   cursor: move;
 }
 
-.wp-admin-organizer-menu-item:hover:before,
 .wp-admin-organizer-separator-item:hover:before {
   color: #2271b1;
 }
