@@ -4,6 +4,14 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.3] - 2025-11-05
+### Fixed
+- **User Editing Visibility** - Added user information card to show active user details
+- Displays username, role, and configuration status when editing users
+- Visual indicator shows whether user is using personal or role configuration
+- Improved UX by making it clear which user is currently being edited
+- Status badge color-coded: blue for role config, green for personal config
+
 ## [1.5.2] - 2025-11-05
 ### Changed
 - **Redesigned Admin Interface** - Modern, gradient header replacing WordPress default styling
