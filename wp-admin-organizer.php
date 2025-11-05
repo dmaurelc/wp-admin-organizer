@@ -3,7 +3,7 @@
  * Plugin Name: WP Admin Organizer
  * Plugin URI: https://example.com/wp-admin-organizer
  * Description: Organize WordPress admin menu items with drag and drop functionality, add separators, hide/show menu items, rename items, mark favorites for quick access, reorganize submenus, customize icons, configure per user role, and export/import configurations.
- * Version: 1.4.3
+ * Version: 1.5.0
  * Author: Daniel Maurel
  * Author URI: https://dmaurel.cl
  * Text Domain: wp-admin-organizer
@@ -34,7 +34,7 @@ function wp_admin_organizer_load_textdomain() {
 }
 
 // Define plugin constants
-define('WP_ADMIN_ORGANIZER_VERSION', '1.4.3');
+define('WP_ADMIN_ORGANIZER_VERSION', '1.5.0');
 define('WP_ADMIN_ORGANIZER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WP_ADMIN_ORGANIZER_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WP_ADMIN_ORGANIZER_PLUGIN_BASENAME', plugin_basename(__FILE__));

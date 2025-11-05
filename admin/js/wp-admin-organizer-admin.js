@@ -44,6 +44,29 @@
       },
     });
 
+    // Handle mode tab switching
+    $(".mode-tab").on("click", function () {
+      var mode = $(this).data("mode");
+      var currentUrl = window.location.href;
+      var newUrl;
+
+      // Check if URL already has mode parameter
+      if (currentUrl.indexOf("mode=") > -1) {
+        // Replace existing mode parameter
+        newUrl = currentUrl.replace(/mode=[^&]*/, "mode=" + mode);
+      } else {
+        // Add mode parameter
+        var separator = currentUrl.indexOf("?") > -1 ? "&" : "?";
+        newUrl = currentUrl + separator + "mode=" + mode;
+      }
+
+      // Remove role or user_id parameters when switching modes to get default selection
+      newUrl = newUrl.replace(/&role=[^&]*/, "").replace(/&user_id=[^&]*/, "");
+
+      // Reload page with new mode
+      window.location.href = newUrl;
+    });
+
     // Handle role selector change
     $("#role-selector").on("change", function () {
       var selectedRole = $(this).val();
@@ -61,6 +84,26 @@
       }
 
       // Reload page with new role
+      window.location.href = newUrl;
+    });
+
+    // Handle user selector change
+    $("#user-selector").on("change", function () {
+      var selectedUserId = $(this).val();
+      var currentUrl = window.location.href;
+      var newUrl;
+
+      // Check if URL already has user_id parameter
+      if (currentUrl.indexOf("user_id=") > -1) {
+        // Replace existing user_id parameter
+        newUrl = currentUrl.replace(/user_id=[^&]*/, "user_id=" + selectedUserId);
+      } else {
+        // Add user_id parameter
+        var separator = currentUrl.indexOf("?") > -1 ? "&" : "?";
+        newUrl = currentUrl + separator + "user_id=" + selectedUserId;
+      }
+
+      // Reload page with new user
       window.location.href = newUrl;
     });
 
@@ -413,6 +456,53 @@
         reader.readAsText(file);
       }
     });
+
+    // Handle enable personal config button (Admin mode - By User)
+    $("#enable-personal-config").on("click", function (e) {
+      e.preventDefault();
+      var userId = $("#user-selector").val();
+      enablePersonalConfiguration(userId);
+    });
+
+    // Handle copy from role button (Admin mode - By User)
+    $("#copy-from-role").on("click", function (e) {
+      e.preventDefault();
+      var userId = $("#user-selector").val();
+      if (confirm(wp_admin_organizer.strings.confirm_copy_from_role || "Copy the current role configuration to this user? This will overwrite any existing personal configuration.")) {
+        copyRoleToUser(userId);
+      }
+    });
+
+    // Handle reset personal config button (Admin mode - By User)
+    $("#reset-personal-config").on("click", function (e) {
+      e.preventDefault();
+      var userId = $("#user-selector").val();
+      if (confirm(wp_admin_organizer.strings.confirm_reset_personal || "Reset this user's personal configuration? They will use their role configuration instead.")) {
+        resetPersonalConfiguration(userId);
+      }
+    });
+
+    // Handle enable personal config button (Personal mode)
+    $("#enable-personal-config-self").on("click", function (e) {
+      e.preventDefault();
+      enablePersonalConfiguration(null); // null means current user
+    });
+
+    // Handle copy from role button (Personal mode)
+    $("#copy-from-role-personal").on("click", function (e) {
+      e.preventDefault();
+      if (confirm(wp_admin_organizer.strings.confirm_copy_from_role || "Copy your role configuration? This will overwrite any existing personal configuration.")) {
+        copyRoleToUser(null); // null means current user
+      }
+    });
+
+    // Handle disable personal config button (Personal mode)
+    $("#disable-personal-config").on("click", function (e) {
+      e.preventDefault();
+      if (confirm(wp_admin_organizer.strings.confirm_reset_personal || "Disable your personal configuration? You will use your role configuration instead.")) {
+        resetPersonalConfiguration(null); // null means current user
+      }
+    });
   });
 
   /**
@@ -554,24 +644,52 @@
       }
     });
 
-    // Get the current role we're editing
-    var currentRole = $("#role-selector").val() || "administrator";
+    // Determine configuration mode and target
+    var configMode = "role"; // default
+    var role = null;
+    var userId = null;
+
+    // Check if we're in user mode or personal mode
+    var urlParams = new URLSearchParams(window.location.search);
+    var mode = urlParams.get("mode");
+
+    if (mode === "user") {
+      configMode = "user";
+      userId = $("#user-selector").val();
+    } else if (mode === "personal") {
+      configMode = "personal";
+      userId = null; // Will use current user on backend
+    } else {
+      // Role mode (default)
+      configMode = "role";
+      role = $("#role-selector").val() || "administrator";
+    }
+
+    // Prepare AJAX data
+    var ajaxData = {
+      action: "save_menu_order",
+      nonce: wp_admin_organizer.nonce,
+      config_mode: configMode,
+      menu_order: menuItems,
+      separators: separators,
+      hidden_items: hiddenItems,
+      renamed_items: renamedItems,
+      favorite_items: favoriteItems,
+      submenu_order: submenuOrder,
+    };
+
+    // Add role or user_id based on mode
+    if (configMode === "role") {
+      ajaxData.role = role;
+    } else {
+      ajaxData.user_id = userId;
+    }
 
     // Send the AJAX request
     $.ajax({
       url: wp_admin_organizer.ajax_url,
       type: "POST",
-      data: {
-        action: "save_menu_order",
-        nonce: wp_admin_organizer.nonce,
-        role: currentRole,
-        menu_order: menuItems,
-        separators: separators,
-        hidden_items: hiddenItems,
-        renamed_items: renamedItems,
-        favorite_items: favoriteItems,
-        submenu_order: submenuOrder,
-      },
+      data: ajaxData,
       success: function (response) {
         if (response.success) {
           // Show success modal and refresh the page after a delay
@@ -773,6 +891,108 @@
       },
       error: function () {
         showMessage("Error importing configuration.");
+      },
+    });
+  }
+
+  /**
+   * Enable personal configuration for a user
+   */
+  function enablePersonalConfiguration(userId) {
+    $.ajax({
+      url: wp_admin_organizer.ajax_url,
+      type: "POST",
+      data: {
+        action: "enable_personal_configuration",
+        nonce: wp_admin_organizer.nonce,
+        user_id: userId,
+      },
+      success: function (response) {
+        if (response.success) {
+          showSuccessModal();
+          setTimeout(function () {
+            window.location.reload();
+          }, 1500);
+        } else {
+          showMessage(
+            wp_admin_organizer.strings.enable_personal_error ||
+              "Error enabling personal configuration."
+          );
+        }
+      },
+      error: function () {
+        showMessage(
+          wp_admin_organizer.strings.enable_personal_error ||
+            "Error enabling personal configuration."
+        );
+      },
+    });
+  }
+
+  /**
+   * Copy role configuration to a user
+   */
+  function copyRoleToUser(userId) {
+    $.ajax({
+      url: wp_admin_organizer.ajax_url,
+      type: "POST",
+      data: {
+        action: "copy_role_to_user",
+        nonce: wp_admin_organizer.nonce,
+        user_id: userId,
+      },
+      success: function (response) {
+        if (response.success) {
+          showSuccessModal();
+          setTimeout(function () {
+            window.location.reload();
+          }, 1500);
+        } else {
+          showMessage(
+            wp_admin_organizer.strings.copy_role_error ||
+              "Error copying role configuration."
+          );
+        }
+      },
+      error: function () {
+        showMessage(
+          wp_admin_organizer.strings.copy_role_error ||
+            "Error copying role configuration."
+        );
+      },
+    });
+  }
+
+  /**
+   * Reset personal configuration for a user
+   */
+  function resetPersonalConfiguration(userId) {
+    $.ajax({
+      url: wp_admin_organizer.ajax_url,
+      type: "POST",
+      data: {
+        action: "reset_personal_configuration",
+        nonce: wp_admin_organizer.nonce,
+        user_id: userId,
+      },
+      success: function (response) {
+        if (response.success) {
+          showSuccessModal();
+          setTimeout(function () {
+            window.location.reload();
+          }, 1500);
+        } else {
+          showMessage(
+            wp_admin_organizer.strings.reset_personal_error ||
+              "Error resetting personal configuration."
+          );
+        }
+      },
+      error: function () {
+        showMessage(
+          wp_admin_organizer.strings.reset_personal_error ||
+            "Error resetting personal configuration."
+        );
       },
     });
   }
