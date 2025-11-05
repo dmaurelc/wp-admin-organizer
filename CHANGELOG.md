@@ -4,6 +4,16 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3] - 2025-11-05
+### Fixed
+- **Action Button Overflow**: Fixed action buttons (accordion toggle, favorite star, visibility eye) overflowing outside menu item header
+- Properly contained all buttons within header boundaries with optimized spacing
+- Added box-sizing: border-box for consistent width calculations
+- Buttons now stay within header padding with proper sizing constraints
+- Hover background color now applies uniformly across entire menu item including action buttons
+- Reduced button padding and removed gaps between buttons for optimal layout
+- Menu item titles now use text-overflow: ellipsis for proper handling of long names
+
 ## [1.4.2] - 2025-11-05
 ### Fixed
 - **Duplicate Drag Handle Icon**: Removed duplicate ::before pseudo-element from menu items
