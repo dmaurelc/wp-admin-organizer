@@ -170,14 +170,36 @@
   border: 1px solid #ddd;
   border-radius: 6px;
   margin-bottom: 10px;
-  padding: 14px 18px;
+  padding: 0;
   cursor: move;
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-start;
-  align-items: center;
+  align-items: stretch;
   transition: all 0.2s ease;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   position: relative;
+}
+
+/* Drag handle styles */
+.wp-admin-organizer-drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  min-width: 20px;
+  color: #8c8f94;
+  cursor: move;
+  font-size: 18px;
+}
+
+.wp-admin-organizer-drag-handle::before {
+  content: "≡";
+  font-size: 16px;
+}
+
+.wp-admin-organizer-menu-item:hover .wp-admin-organizer-drag-handle {
+  color: #2271b1;
 }
 
 .wp-admin-organizer-menu-item:before,
@@ -195,9 +217,13 @@
 }
 
 .wp-admin-organizer-menu-item:hover {
-  background: #f0f6fc;
+  background: #f9f9f9;
   border-color: #8c8f94;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.wp-admin-organizer-menu-item:hover .wp-admin-organizer-menu-item-header {
+  background: #f0f6fc;
 }
 
 .wp-admin-organizer-menu-item.ui-sortable-helper {
@@ -213,10 +239,32 @@
   border-radius: 6px;
 }
 
+/* Menu item header - first row with title and actions */
+.wp-admin-organizer-menu-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 100%;
+  padding: 14px 18px;
+  gap: 10px;
+}
+
 /* Menu item title */
 .wp-admin-organizer-menu-item-title {
   font-weight: 600;
   color: #1d2327;
+  cursor: pointer;
+  flex: 1;
+}
+
+/* Menu item actions container - keeps buttons aligned to the right */
+.wp-admin-organizer-menu-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 
 /* Separator item */
@@ -634,10 +682,10 @@
   border-radius: 4px;
   transition: all 0.2s ease;
   font-size: 16px;
-  margin-left: auto;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .toggle-visibility:hover {
@@ -669,7 +717,7 @@
   border: 1px solid #8c8f94;
   font-size: 13px;
   width: 250px;
-  margin-left: 5px;
+  margin: 0 5px;
   font-weight: 600;
 }
 
@@ -677,11 +725,6 @@
   border-color: #2271b1;
   box-shadow: 0 0 0 1px #2271b1;
   outline: none;
-}
-
-.wp-admin-organizer-menu-item-title {
-  cursor: pointer;
-  flex: 1;
 }
 
 .wp-admin-organizer-menu-item-title:hover {
@@ -727,10 +770,10 @@
   border-radius: 4px;
   transition: all 0.2s ease;
   font-size: 16px;
-  margin-left: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .toggle-favorite:hover {
@@ -777,13 +820,13 @@
 .toggle-submenu {
   color: #787c82;
   text-decoration: none;
-  padding: 5px;
-  margin-left: 8px;
+  padding: 4px 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  border-radius: 3px;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .toggle-submenu:hover {
@@ -804,13 +847,14 @@
   transform: rotate(180deg);
 }
 
-/* Submenu list container */
+/* Submenu list container - appears below the menu item header */
 .wp-admin-organizer-submenu-list {
-  margin: 10px 0 0 0;
+  flex: 0 0 100%;
+  margin: 0;
   padding: 0;
   background: #fafafa;
   border-left: 3px solid #d0d0d0;
-  border-radius: 4px;
+  border-radius: 0 0 6px 6px;
   max-height: 0;
   overflow: hidden;
   opacity: 0;

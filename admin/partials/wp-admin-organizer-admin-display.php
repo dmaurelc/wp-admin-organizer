@@ -135,8 +135,14 @@ if (!defined('WPINC')) {
                     $display_title = !empty($custom_name) ? $custom_name : $item['title'];
 
                     echo '<div class="wp-admin-organizer-menu-item' . ($is_hidden ? ' hidden' : '') . ($is_favorite ? ' favorite' : '') . '" data-menu-id="' . esc_attr($item['id']) . '"' . (!empty($custom_name) ? ' data-custom-name="' . esc_attr($custom_name) . '"' : '') . '>';
+
+                    // Menu item header with title and action buttons
+                    echo '<div class="wp-admin-organizer-menu-item-header">';
                     echo '<div class="wp-admin-organizer-drag-handle"></div>';
                     echo '<div class="wp-admin-organizer-menu-item-title">#' . esc_html($position) . ' - ' . esc_html($display_title) . '</div>';
+
+                    // Action buttons container - aligned to the right
+                    echo '<div class="wp-admin-organizer-menu-item-actions">';
 
                     // Check if this menu item has submenus - add toggle icon
                     $has_submenus = isset($submenu[$item['id']]) && !empty($submenu[$item['id']]);
@@ -146,6 +152,10 @@ if (!defined('WPINC')) {
 
                     echo '<a href="#" class="toggle-favorite" title="' . ($is_favorite ? __('Remove from Favorites', 'wp-admin-organizer') : __('Add to Favorites', 'wp-admin-organizer')) . '"><span class="dashicons dashicons-star-' . ($is_favorite ? 'filled' : 'empty') . '"></span></a>';
                     echo '<a href="#" class="toggle-visibility" title="' . ($is_hidden ? __('Show', 'wp-admin-organizer') : __('Hide', 'wp-admin-organizer')) . '"><span class="dashicons dashicons-' . ($is_hidden ? 'hidden' : 'visibility') . '"></span></a>';
+
+                    echo '</div>'; // .wp-admin-organizer-menu-item-actions
+                    echo '</div>'; // .wp-admin-organizer-menu-item-header
+
                     echo '<input type="hidden" class="position" value="' . esc_attr($position) . '">';
 
                     // Check if this menu item has submenus

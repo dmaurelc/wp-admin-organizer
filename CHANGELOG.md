@@ -4,6 +4,21 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2025-11-05
+### Fixed
+- **Accordion Layout**: Submenu accordion now properly displays below menu item instead of inline
+- **Icon Alignment**: Role/favorites/visibility icons now properly aligned to the right with correct spacing
+- **Menu Item Layout**: Restructured to two-line layout for better visual hierarchy
+  - First row: drag handle + menu title + action buttons (right-aligned)
+  - Second row: expandable submenu accordion (full-width)
+- **Spacing Issues**: Removed extra whitespace on the right side of menu items
+- **Visual Hierarchy**: Better organization with clear separation between menu header and submenu content
+
+### Changed
+- Menu item structure now uses `.wp-admin-organizer-menu-item-header` container
+- Action buttons now grouped in `.wp-admin-organizer-menu-item-actions` container
+- Improved hover states for better visual feedback
+
 ## [1.4.0] - 2025-11-05
 ### Added
 - **Role-Based Configuration Profiles** 🎯 - Configure different menu layouts for each WordPress user role
