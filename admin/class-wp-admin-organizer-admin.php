@@ -619,6 +619,12 @@ class WP_Admin_Organizer_Admin {
         $saved_submenu_order = isset($config['submenu_order']) ? $config['submenu_order'] : array();
         $custom_icons = isset($config['custom_icons']) ? $config['custom_icons'] : array();
 
+        // Create a helper function for template to check personal configs
+        $user_has_personal_config_map = array();
+        foreach ($all_users as $user) {
+            $user_has_personal_config_map[$user->ID] = $this->has_personal_config($user->ID);
+        }
+
         include_once WP_ADMIN_ORGANIZER_PLUGIN_DIR . 'admin/partials/wp-admin-organizer-admin-display.php';
     }
 

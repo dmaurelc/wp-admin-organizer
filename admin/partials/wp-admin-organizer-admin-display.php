@@ -22,17 +22,130 @@ if (!defined('WPINC')) {
                 <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
                 <p><?php _e('Drag and drop menu items to reorder them. You can also add separators between items.', 'wp-admin-organizer'); ?></p>
             </div>
-            <div class="wp-admin-organizer-role-selector">
-                <label for="role-selector"><?php _e('Configure menu for role:', 'wp-admin-organizer'); ?></label>
-                <select id="role-selector" name="role-selector">
-                    <?php foreach ($available_roles as $role_key => $role_name) : ?>
-                        <option value="<?php echo esc_attr($role_key); ?>" <?php selected($editing_role, $role_key); ?>>
-                            <?php echo esc_html($role_name); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <span class="description"><?php _e('Each role can have its own menu configuration.', 'wp-admin-organizer'); ?></span>
-            </div>
+
+            <?php if ($is_admin && $config_mode !== 'personal') : ?>
+                <!-- Admin Mode: Configure for Roles or Users -->
+                <div class="wp-admin-organizer-config-selector">
+                    <label><?php _e('Configuration Mode:', 'wp-admin-organizer'); ?></label>
+                    <div class="mode-tabs">
+                        <button type="button" class="mode-tab <?php echo $config_mode === 'role' ? 'active' : ''; ?>" data-mode="role">
+                            <span class="dashicons dashicons-groups"></span>
+                            <?php _e('By Role', 'wp-admin-organizer'); ?>
+                        </button>
+                        <button type="button" class="mode-tab <?php echo $config_mode === 'user' ? 'active' : ''; ?>" data-mode="user">
+                            <span class="dashicons dashicons-admin-users"></span>
+                            <?php _e('By User', 'wp-admin-organizer'); ?>
+                        </button>
+                        <?php if (count($users_with_personal_configs) > 0) : ?>
+                            <span class="badge"><?php echo count($users_with_personal_configs); ?> <?php _e('users with personal configs', 'wp-admin-organizer'); ?></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($config_mode === 'role') : ?>
+                        <!-- Role Selector -->
+                        <div class="selector-container role-selector-container">
+                            <label for="role-selector"><?php _e('Select Role:', 'wp-admin-organizer'); ?></label>
+                            <select id="role-selector" name="role-selector">
+                                <?php foreach ($available_roles as $role_key => $role_name) : ?>
+                                    <option value="<?php echo esc_attr($role_key); ?>" <?php selected($editing_role, $role_key); ?>>
+                                        <?php echo esc_html($role_name); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <span class="description"><?php _e('Configure default menu for this role.', 'wp-admin-organizer'); ?></span>
+                        </div>
+                    <?php elseif ($config_mode === 'user') : ?>
+                        <!-- User Selector -->
+                        <div class="selector-container user-selector-container">
+                            <label for="user-selector"><?php _e('Select User:', 'wp-admin-organizer'); ?></label>
+                            <select id="user-selector" name="user-selector">
+                                <?php foreach ($all_users as $user) : ?>
+                                    <option value="<?php echo esc_attr($user->ID); ?>" <?php selected($editing_user_id, $user->ID); ?>>
+                                        <?php
+                                        echo esc_html($user->display_name);
+                                        echo ' (' . esc_html($user->user_login) . ')';
+                                        if (!empty($user->roles)) {
+                                            echo ' - ' . esc_html(translate_user_role(ucfirst($user->roles[0])));
+                                        }
+                                        if (isset($user_has_personal_config_map[$user->ID]) && $user_has_personal_config_map[$user->ID]) {
+                                            echo ' ★';
+                                        }
+                                        ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <span class="description">
+                                <?php if ($has_personal_config) : ?>
+                                    ★ <?php _e('This user has a personal configuration', 'wp-admin-organizer'); ?>
+                                <?php else : ?>
+                                    <?php _e('This user uses their role configuration', 'wp-admin-organizer'); ?>
+                                <?php endif; ?>
+                            </span>
+
+                            <!-- User Actions -->
+                            <div class="user-actions">
+                                <?php if (!$has_personal_config) : ?>
+                                    <button type="button" id="enable-personal-config" class="button button-secondary">
+                                        <span class="dashicons dashicons-admin-generic"></span>
+                                        <?php _e('Enable Personal Config', 'wp-admin-organizer'); ?>
+                                    </button>
+                                <?php else : ?>
+                                    <button type="button" id="copy-from-role" class="button button-secondary">
+                                        <span class="dashicons dashicons-update"></span>
+                                        <?php _e('Copy from Role', 'wp-admin-organizer'); ?>
+                                    </button>
+                                    <button type="button" id="reset-personal-config" class="button button-secondary button-danger">
+                                        <span class="dashicons dashicons-no"></span>
+                                        <?php _e('Reset Personal Config', 'wp-admin-organizer'); ?>
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+            <?php else : ?>
+                <!-- Personal Mode: User managing their own config -->
+                <div class="wp-admin-organizer-personal-config">
+                    <div class="personal-config-status">
+                        <?php if ($has_personal_config) : ?>
+                            <div class="status-badge active">
+                                <span class="dashicons dashicons-yes"></span>
+                                <?php _e('Personal Configuration Active', 'wp-admin-organizer'); ?>
+                            </div>
+                            <p class="description">
+                                <?php _e('You are using your own personalized menu configuration.', 'wp-admin-organizer'); ?>
+                            </p>
+                            <div class="personal-actions">
+                                <button type="button" id="copy-from-role-personal" class="button button-secondary">
+                                    <span class="dashicons dashicons-update"></span>
+                                    <?php _e('Reset to Role Default', 'wp-admin-organizer'); ?>
+                                </button>
+                                <button type="button" id="disable-personal-config" class="button button-secondary">
+                                    <span class="dashicons dashicons-no"></span>
+                                    <?php _e('Disable Personal Config', 'wp-admin-organizer'); ?>
+                                </button>
+                            </div>
+                        <?php else : ?>
+                            <div class="status-badge inactive">
+                                <span class="dashicons dashicons-info"></span>
+                                <?php
+                                $user = wp_get_current_user();
+                                $role_name = !empty($user->roles) ? translate_user_role(ucfirst($user->roles[0])) : 'User';
+                                printf(__('Using %s role configuration', 'wp-admin-organizer'), '<strong>' . esc_html($role_name) . '</strong>');
+                                ?>
+                            </div>
+                            <p class="description">
+                                <?php _e('Enable personal configuration to customize your menu independently from your role.', 'wp-admin-organizer'); ?>
+                            </p>
+                            <button type="button" id="enable-personal-config-self" class="button button-primary">
+                                <span class="dashicons dashicons-admin-generic"></span>
+                                <?php _e('Enable Personal Configuration', 'wp-admin-organizer'); ?>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
     
