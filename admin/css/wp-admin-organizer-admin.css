@@ -531,3 +531,96 @@
     padding: 12px 15px;
   }
 }
+
+/* Toggle visibility button */
+.toggle-visibility {
+  color: #50575e;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-visibility:hover {
+  background: #f0f0f1;
+  color: #2271b1;
+}
+
+.toggle-visibility .dashicons {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Hidden menu items */
+.wp-admin-organizer-menu-item.hidden {
+  opacity: 0.5;
+  background: #f0f0f0;
+}
+
+.wp-admin-organizer-menu-item.hidden .wp-admin-organizer-menu-item-title {
+  text-decoration: line-through;
+  color: #8c8f94;
+}
+
+/* Inline editing for menu item titles */
+.edit-menu-item-title {
+  padding: 5px 8px;
+  border-radius: 4px;
+  border: 1px solid #8c8f94;
+  font-size: 13px;
+  width: 250px;
+  margin-left: 5px;
+  font-weight: 600;
+}
+
+.edit-menu-item-title:focus {
+  border-color: #2271b1;
+  box-shadow: 0 0 0 1px #2271b1;
+  outline: none;
+}
+
+.wp-admin-organizer-menu-item-title {
+  cursor: pointer;
+  flex: 1;
+}
+
+.wp-admin-organizer-menu-item-title:hover {
+  color: #2271b1;
+}
+
+/* Import/Export section */
+.wp-admin-organizer-import-export {
+  margin-top: 10px;
+}
+
+.wp-admin-organizer-import-export .form-field {
+  margin-bottom: 15px;
+}
+
+.wp-admin-organizer-import-export .form-field:last-child {
+  margin-bottom: 0;
+}
+
+.wp-admin-organizer-import-export .button {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  height: 40px;
+  line-height: 38px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wp-admin-organizer-import-export .description {
+  font-size: 12px;
+  color: #646970;
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-style: italic;
+}

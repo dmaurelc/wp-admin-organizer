@@ -108,9 +108,14 @@ if (!defined('WPINC')) {
                 if ($item['type'] === 'menu_item') {
                     // Display menu item with position number integrated in the title
                     $position++;
-                    echo '<div class="wp-admin-organizer-menu-item" data-menu-id="' . esc_attr($item['id']) . '">';
+                    $is_hidden = in_array($item['id'], $hidden_items);
+                    $custom_name = isset($renamed_items[$item['id']]) ? $renamed_items[$item['id']] : '';
+                    $display_title = !empty($custom_name) ? $custom_name : $item['title'];
+
+                    echo '<div class="wp-admin-organizer-menu-item' . ($is_hidden ? ' hidden' : '') . '" data-menu-id="' . esc_attr($item['id']) . '"' . (!empty($custom_name) ? ' data-custom-name="' . esc_attr($custom_name) . '"' : '') . '>';
                     echo '<div class="wp-admin-organizer-drag-handle"></div>';
-                    echo '<div class="wp-admin-organizer-menu-item-title">#' . esc_html($position) . ' - ' . $item['title'] . '</div>';
+                    echo '<div class="wp-admin-organizer-menu-item-title">#' . esc_html($position) . ' - ' . esc_html($display_title) . '</div>';
+                    echo '<a href="#" class="toggle-visibility" title="' . ($is_hidden ? 'Show' : 'Hide') . '"><span class="dashicons dashicons-' . ($is_hidden ? 'hidden' : 'visibility') . '"></span></a>';
                     echo '<input type="hidden" class="position" value="' . esc_attr($position) . '">';
                     echo '</div>';
                 } else if ($item['type'] === 'separator') {
@@ -119,9 +124,9 @@ if (!defined('WPINC')) {
                     $type = $item['separator_type'];
                     $text = $item['text'];
                     $sep_position = $item['position'];
-                    
+
                     echo '<div class="wp-admin-organizer-separator-item' . ($type === 'text' ? ' text-separator' : '') . '">';
-                    echo '<div class="wp-admin-organizer-separator-item-title">#' . esc_html($position) . ' - ' . 
+                    echo '<div class="wp-admin-organizer-separator-item-title">#' . esc_html($position) . ' - ' .
                          esc_html($type === 'text' ? 'Text Separator: ' . $text : 'Simple Separator') . '</div>';
                     echo '<a href="#" class="remove-separator">' . __('Remove', 'wp-admin-organizer') . '</a>';
                     echo '<span class="separator-text" style="display:none;">' . esc_html($text) . '</span>';
@@ -173,12 +178,12 @@ if (!defined('WPINC')) {
                 
                 <div class="wp-admin-organizer-settings-section">
                     <h3><?php _e('Admin Logo', 'wp-admin-organizer'); ?></h3>
-                    
+
                     <div class="wp-admin-organizer-logo-form">
                         <div class="form-field">
                             <label for="admin-logo"><?php _e('Upload Logo', 'wp-admin-organizer'); ?></label>
                             <div class="logo-preview-container">
-                                <?php 
+                                <?php
                                 $logo_url = get_option('wp_admin_organizer_logo', '');
                                 if (!empty($logo_url)) :
                                 ?>
@@ -191,6 +196,23 @@ if (!defined('WPINC')) {
                             <button id="remove-logo-button" class="button"><?php _e('Remove', 'wp-admin-organizer'); ?></button>
                             <?php endif; ?>
                             <p class="description"><?php _e('Upload a logo to display at the top of your admin menu. Recommended a ligth logo version, size recommended: 160px width max.', 'wp-admin-organizer'); ?></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wp-admin-organizer-settings-section">
+                    <h3><?php _e('Import / Export', 'wp-admin-organizer'); ?></h3>
+
+                    <div class="wp-admin-organizer-import-export">
+                        <div class="form-field">
+                            <button id="export-config" class="button button-secondary"><?php _e('Export Configuration', 'wp-admin-organizer'); ?></button>
+                            <p class="description"><?php _e('Download your current menu configuration as a JSON file.', 'wp-admin-organizer'); ?></p>
+                        </div>
+
+                        <div class="form-field">
+                            <button id="import-config" class="button button-secondary"><?php _e('Import Configuration', 'wp-admin-organizer'); ?></button>
+                            <input type="file" id="import-config-file" accept=".json" style="display:none;">
+                            <p class="description"><?php _e('Import a previously exported configuration file.', 'wp-admin-organizer'); ?></p>
                         </div>
                     </div>
                 </div>

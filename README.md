@@ -1,23 +1,29 @@
 # WP Admin Organizer
 
-Organize WordPress admin menu items with drag and drop functionality, add separators and text separators.
+Organize WordPress admin menu items with drag and drop functionality, add separators, hide/show menu items, rename items, and export/import configurations.
 
 ## Description
 
 WP Admin Organizer is a WordPress plugin that allows you to:
 - Reorganize admin menu items using drag and drop
 - Add simple or text separators between menu items
+- Hide/show menu items without disabling plugins
+- Rename menu items with inline editing
 - Customize the admin area with a custom logo
+- Export and import configurations for use across multiple sites
 - Save and restore menu arrangements
 
 ## Features
 
-- Drag and drop menu organization
-- Simple and text separators
-- Custom logo upload
-- Menu order saving
-- Responsive design
-- Internationalization support
+- **Drag and drop menu organization** - Easily reorder menu items
+- **Simple and text separators** - Add visual dividers between menu sections
+- **Hide/show menu items** - Toggle visibility of menu items with eye icon
+- **Rename menu items** - Click on any menu item to edit its name
+- **Custom logo upload** - Add your branding to the admin menu
+- **Export/Import configurations** - Share settings across multiple WordPress installations
+- **Menu order saving** - Persistent configuration across sessions
+- **Responsive design** - Works on desktop, tablet, and mobile
+- **Internationalization support** - Ready for translation
 
 ## Installation
 

@@ -193,6 +193,98 @@
       // Save the empty logo URL via AJAX
       saveLogo("");
     });
+
+    // Handle hide/show toggle button click
+    $(".wp-admin-organizer-menu-list").on(
+      "click",
+      ".toggle-visibility",
+      function (e) {
+        e.preventDefault();
+        var $item = $(this).closest(".wp-admin-organizer-menu-item");
+        $item.toggleClass("hidden");
+
+        // Update button icon/text
+        if ($item.hasClass("hidden")) {
+          $(this).html('<span class="dashicons dashicons-hidden"></span>');
+          $(this).attr("title", "Show");
+        } else {
+          $(this).html('<span class="dashicons dashicons-visibility"></span>');
+          $(this).attr("title", "Hide");
+        }
+      }
+    );
+
+    // Handle menu item title click for inline editing (rename functionality)
+    $(".wp-admin-organizer-menu-list").on(
+      "click",
+      ".wp-admin-organizer-menu-item-title",
+      function (e) {
+        e.preventDefault();
+        var $item = $(this).closest(".wp-admin-organizer-menu-item");
+        var currentText = $(this).text();
+
+        // Remove position number from text
+        var textWithoutPosition = currentText.replace(/^#\d+\s*-\s*/, "");
+
+        // Create an input field for editing
+        var $input = $(
+          '<input type="text" class="edit-menu-item-title" value="' +
+            textWithoutPosition +
+            '">'
+        );
+        $(this).hide().after($input);
+        $input.focus().select();
+
+        // Handle input blur and enter key
+        $input.on("blur keypress", function (e) {
+          if (e.type === "blur" || (e.type === "keypress" && e.which === 13)) {
+            var newText = $(this).val();
+            var positionNum = $item.find(".position").val();
+
+            // Store the custom name as a data attribute
+            $item.data("custom-name", newText);
+
+            // Update the title
+            $item
+              .find(".wp-admin-organizer-menu-item-title")
+              .text("#" + positionNum + " - " + newText)
+              .show();
+            $(this).remove();
+          }
+        });
+      }
+    );
+
+    // Handle export button click
+    $("#export-config").on("click", function (e) {
+      e.preventDefault();
+      exportConfiguration();
+    });
+
+    // Handle import button click
+    $("#import-config").on("click", function (e) {
+      e.preventDefault();
+      $("#import-config-file").click();
+    });
+
+    // Handle file selection for import
+    $("#import-config-file").on("change", function (e) {
+      var file = e.target.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            var config = e.target.result;
+            // Validate JSON
+            JSON.parse(config);
+            importConfiguration(config);
+          } catch (error) {
+            showMessage("Invalid configuration file. Please select a valid JSON file.");
+          }
+        };
+        reader.readAsText(file);
+      }
+    });
   });
 
   /**
@@ -297,6 +389,22 @@
       }
     });
 
+    // Get hidden items
+    var hiddenItems = [];
+    $(".wp-admin-organizer-menu-item.hidden").each(function () {
+      hiddenItems.push($(this).data("menu-id"));
+    });
+
+    // Get renamed items
+    var renamedItems = {};
+    $(".wp-admin-organizer-menu-item").each(function () {
+      var menuId = $(this).data("menu-id");
+      var customName = $(this).data("custom-name");
+      if (customName) {
+        renamedItems[menuId] = customName;
+      }
+    });
+
     // Send the AJAX request
     $.ajax({
       url: wp_admin_organizer.ajax_url,
@@ -306,6 +414,8 @@
         nonce: wp_admin_organizer.nonce,
         menu_order: menuItems,
         separators: separators,
+        hidden_items: hiddenItems,
+        renamed_items: renamedItems,
       },
       success: function (response) {
         if (response.success) {
@@ -446,5 +556,69 @@
     setTimeout(function () {
       $(".wp-admin-organizer-success-modal").removeClass("visible");
     }, 3000);
+  }
+
+  /**
+   * Export configuration as JSON file
+   */
+  function exportConfiguration() {
+    $.ajax({
+      url: wp_admin_organizer.ajax_url,
+      type: "POST",
+      data: {
+        action: "export_configuration",
+        nonce: wp_admin_organizer.nonce,
+      },
+      success: function (response) {
+        if (response.success) {
+          // Create a JSON file and trigger download
+          var dataStr =
+            "data:text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(response.data, null, 2));
+          var downloadAnchorNode = document.createElement("a");
+          downloadAnchorNode.setAttribute("href", dataStr);
+          downloadAnchorNode.setAttribute(
+            "download",
+            "wp-admin-organizer-config.json"
+          );
+          document.body.appendChild(downloadAnchorNode);
+          downloadAnchorNode.click();
+          downloadAnchorNode.remove();
+        } else {
+          showMessage("Error exporting configuration.");
+        }
+      },
+      error: function () {
+        showMessage("Error exporting configuration.");
+      },
+    });
+  }
+
+  /**
+   * Import configuration from JSON string
+   */
+  function importConfiguration(configJson) {
+    $.ajax({
+      url: wp_admin_organizer.ajax_url,
+      type: "POST",
+      data: {
+        action: "import_configuration",
+        nonce: wp_admin_organizer.nonce,
+        configuration: configJson,
+      },
+      success: function (response) {
+        if (response.success) {
+          showSuccessModal();
+          setTimeout(function () {
+            window.location.reload();
+          }, 1500);
+        } else {
+          showMessage("Error importing configuration.");
+        }
+      },
+      error: function () {
+        showMessage("Error importing configuration.");
+      },
+    });
   }
 })(jQuery);

@@ -127,17 +127,29 @@ class WP_Admin_Organizer_Admin {
             'wp_admin_organizer_menu_order',
             array('sanitize_callback' => array($this, 'sanitize_menu_order'))
         );
-        
+
         register_setting(
             'wp_admin_organizer_settings',
             'wp_admin_organizer_separators',
             array('sanitize_callback' => array($this, 'sanitize_separators'))
         );
-        
+
         register_setting(
             'wp_admin_organizer_settings',
             'wp_admin_organizer_logo',
             array('sanitize_callback' => 'esc_url_raw')
+        );
+
+        register_setting(
+            'wp_admin_organizer_settings',
+            'wp_admin_organizer_hidden_items',
+            array('sanitize_callback' => array($this, 'sanitize_menu_order'))
+        );
+
+        register_setting(
+            'wp_admin_organizer_settings',
+            'wp_admin_organizer_renamed_items',
+            array('sanitize_callback' => array($this, 'sanitize_renamed_items'))
         );
     }
 
@@ -177,27 +189,48 @@ class WP_Admin_Organizer_Admin {
         if (!is_array($input)) {
             return array();
         }
-        
+
         $sanitized_input = array();
-        
+
         foreach ($input as $key => $separator) {
             $sanitized_separator = array();
-            
+
             if (isset($separator['position'])) {
                 $sanitized_separator['position'] = intval($separator['position']);
             }
-            
+
             if (isset($separator['type'])) {
                 $sanitized_separator['type'] = sanitize_text_field($separator['type']);
             }
-            
+
             if (isset($separator['text'])) {
                 $sanitized_separator['text'] = sanitize_text_field($separator['text']);
             }
-            
+
             $sanitized_input[$key] = $sanitized_separator;
         }
-        
+
+        return $sanitized_input;
+    }
+
+    /**
+     * Sanitize the renamed items option.
+     *
+     * @since    1.1.0
+     * @param    array    $input    The renamed items array.
+     * @return   array    The sanitized renamed items array.
+     */
+    public function sanitize_renamed_items($input) {
+        if (!is_array($input)) {
+            return array();
+        }
+
+        $sanitized_input = array();
+
+        foreach ($input as $key => $value) {
+            $sanitized_input[sanitize_text_field($key)] = sanitize_text_field($value);
+        }
+
         return $sanitized_input;
     }
 
@@ -209,13 +242,19 @@ class WP_Admin_Organizer_Admin {
     public function display_plugin_admin_page() {
         // Get the current admin menu
         global $menu;
-        
+
         // Get saved menu order
         $saved_menu_order = get_option('wp_admin_organizer_menu_order', array());
-        
+
         // Get saved separators
         $saved_separators = get_option('wp_admin_organizer_separators', array());
-        
+
+        // Get hidden items
+        $hidden_items = get_option('wp_admin_organizer_hidden_items', array());
+
+        // Get renamed items
+        $renamed_items = get_option('wp_admin_organizer_renamed_items', array());
+
         include_once WP_ADMIN_ORGANIZER_PLUGIN_DIR . 'admin/partials/wp-admin-organizer-admin-display.php';
     }
 
@@ -229,30 +268,48 @@ class WP_Admin_Organizer_Admin {
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wp_admin_organizer_nonce')) {
             wp_send_json_error('Invalid nonce');
         }
-        
+
         // Check permissions
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Permission denied');
         }
-        
+
         // Get the menu order from the POST data
         $menu_order = isset($_POST['menu_order']) ? $_POST['menu_order'] : array();
-        
+
         // Sanitize the menu order
         $menu_order = $this->sanitize_menu_order($menu_order);
-        
+
         // Save the menu order
         update_option('wp_admin_organizer_menu_order', $menu_order);
-        
+
         // Get the separators from the POST data
         $separators = isset($_POST['separators']) ? $_POST['separators'] : array();
-        
+
         // Sanitize the separators
         $separators = $this->sanitize_separators($separators);
-        
+
         // Save the separators
         update_option('wp_admin_organizer_separators', $separators);
-        
+
+        // Get hidden items from POST data
+        $hidden_items = isset($_POST['hidden_items']) ? $_POST['hidden_items'] : array();
+
+        // Sanitize hidden items
+        $hidden_items = $this->sanitize_menu_order($hidden_items);
+
+        // Save hidden items
+        update_option('wp_admin_organizer_hidden_items', $hidden_items);
+
+        // Get renamed items from POST data
+        $renamed_items = isset($_POST['renamed_items']) ? $_POST['renamed_items'] : array();
+
+        // Sanitize renamed items
+        $renamed_items = $this->sanitize_renamed_items($renamed_items);
+
+        // Save renamed items
+        update_option('wp_admin_organizer_renamed_items', $renamed_items);
+
         wp_send_json_success('Menu order saved successfully');
     }
 
@@ -303,19 +360,103 @@ class WP_Admin_Organizer_Admin {
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wp_admin_organizer_nonce')) {
             wp_send_json_error('Invalid nonce');
         }
-        
+
         // Check permissions
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Permission denied');
         }
-        
+
         // Get the logo URL from the POST data
         $logo_url = isset($_POST['logo_url']) ? esc_url_raw($_POST['logo_url']) : '';
-        
+
         // Save the logo URL
         update_option('wp_admin_organizer_logo', $logo_url);
-        
+
         wp_send_json_success('Logo saved successfully');
+    }
+
+    /**
+     * AJAX handler for exporting configuration.
+     *
+     * @since    1.1.0
+     */
+    public function export_configuration() {
+        // Check nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wp_admin_organizer_nonce')) {
+            wp_send_json_error('Invalid nonce');
+        }
+
+        // Check permissions
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+        }
+
+        // Get all plugin options
+        $configuration = array(
+            'menu_order' => get_option('wp_admin_organizer_menu_order', array()),
+            'separators' => get_option('wp_admin_organizer_separators', array()),
+            'logo' => get_option('wp_admin_organizer_logo', ''),
+            'hidden_items' => get_option('wp_admin_organizer_hidden_items', array()),
+            'renamed_items' => get_option('wp_admin_organizer_renamed_items', array()),
+            'version' => WP_ADMIN_ORGANIZER_VERSION,
+            'exported_at' => current_time('mysql')
+        );
+
+        wp_send_json_success($configuration);
+    }
+
+    /**
+     * AJAX handler for importing configuration.
+     *
+     * @since    1.1.0
+     */
+    public function import_configuration() {
+        // Check nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wp_admin_organizer_nonce')) {
+            wp_send_json_error('Invalid nonce');
+        }
+
+        // Check permissions
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission denied');
+        }
+
+        // Get the configuration data from POST
+        $configuration = isset($_POST['configuration']) ? $_POST['configuration'] : '';
+
+        // Decode the JSON
+        $config_data = json_decode($configuration, true);
+
+        if (!$config_data || !is_array($config_data)) {
+            wp_send_json_error('Invalid configuration data');
+        }
+
+        // Import menu order
+        if (isset($config_data['menu_order'])) {
+            update_option('wp_admin_organizer_menu_order', $this->sanitize_menu_order($config_data['menu_order']));
+        }
+
+        // Import separators
+        if (isset($config_data['separators'])) {
+            update_option('wp_admin_organizer_separators', $this->sanitize_separators($config_data['separators']));
+        }
+
+        // Import logo
+        if (isset($config_data['logo'])) {
+            update_option('wp_admin_organizer_logo', esc_url_raw($config_data['logo']));
+        }
+
+        // Import hidden items
+        if (isset($config_data['hidden_items'])) {
+            update_option('wp_admin_organizer_hidden_items', $this->sanitize_menu_order($config_data['hidden_items']));
+        }
+
+        // Import renamed items
+        if (isset($config_data['renamed_items'])) {
+            update_option('wp_admin_organizer_renamed_items', $this->sanitize_renamed_items($config_data['renamed_items']));
+        }
+
+        wp_send_json_success('Configuration imported successfully');
     }
 
     /**
@@ -325,23 +466,39 @@ class WP_Admin_Organizer_Admin {
      */
     public function reorganize_admin_menu() {
         global $menu;
-        
+
         // Add the logo at the top of the menu if one is set
         $this->add_admin_logo();
-        
+
         // Get saved menu order
         $saved_menu_order = get_option('wp_admin_organizer_menu_order', array());
-        
+
+        // Get hidden items
+        $hidden_items = get_option('wp_admin_organizer_hidden_items', array());
+
+        // Get renamed items
+        $renamed_items = get_option('wp_admin_organizer_renamed_items', array());
+
         // If we have a saved menu order, reorganize the menu
         if (!empty($saved_menu_order)) {
             $new_menu = array();
             $position = 10;
-            
+
             // Loop through the saved menu order
             foreach ($saved_menu_order as $item_id) {
+                // Skip hidden items
+                if (in_array($item_id, $hidden_items)) {
+                    continue;
+                }
+
                 // Find the menu item in the current menu
                 foreach ($menu as $index => $item) {
                     if (isset($item[2]) && $item[2] === $item_id) {
+                        // Apply renamed title if exists
+                        if (isset($renamed_items[$item_id])) {
+                            $item[0] = $renamed_items[$item_id];
+                        }
+
                         // Add the item to the new menu at the next position
                         $new_menu[$position] = $item;
                         // Remove the item from the original menu
@@ -352,19 +509,45 @@ class WP_Admin_Organizer_Admin {
                     }
                 }
             }
-            
+
             // Add any remaining items to the end of the new menu
             foreach ($menu as $index => $item) {
                 if (isset($item[2]) && !in_array($item[2], $saved_menu_order)) {
+                    // Skip hidden items
+                    if (in_array($item[2], $hidden_items)) {
+                        continue;
+                    }
+
+                    // Apply renamed title if exists
+                    if (isset($renamed_items[$item[2]])) {
+                        $item[0] = $renamed_items[$item[2]];
+                    }
+
                     $new_menu[$position] = $item;
                     $position += 10;
                 }
             }
-            
+
             // Replace the global menu with our new menu
             $menu = $new_menu;
+        } else {
+            // Even if no menu order, still apply hiding and renaming
+            foreach ($menu as $index => $item) {
+                if (isset($item[2])) {
+                    // Hide items
+                    if (in_array($item[2], $hidden_items)) {
+                        unset($menu[$index]);
+                        continue;
+                    }
+
+                    // Rename items
+                    if (isset($renamed_items[$item[2]])) {
+                        $menu[$index][0] = $renamed_items[$item[2]];
+                    }
+                }
+            }
         }
-        
+
         // Add separators
         $this->add_menu_separators();
     }
