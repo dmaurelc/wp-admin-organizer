@@ -153,6 +153,9 @@ class WP_Admin_Organizer {
         $this->loader->add_action('wp_ajax_save_logo', $plugin_admin, 'save_logo');
         $this->loader->add_action('wp_ajax_export_configuration', $plugin_admin, 'export_configuration');
         $this->loader->add_action('wp_ajax_import_configuration', $plugin_admin, 'import_configuration');
+        $this->loader->add_action('wp_ajax_enable_personal_configuration', $plugin_admin, 'enable_personal_configuration');
+        $this->loader->add_action('wp_ajax_copy_role_to_user', $plugin_admin, 'copy_role_to_user');
+        $this->loader->add_action('wp_ajax_reset_personal_configuration', $plugin_admin, 'reset_personal_configuration');
 
         // Apply menu reorganization
         $this->loader->add_action('admin_menu', $plugin_admin, 'reorganize_admin_menu', 999);

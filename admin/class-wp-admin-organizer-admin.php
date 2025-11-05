@@ -136,6 +136,190 @@ class WP_Admin_Organizer_Admin {
     }
 
     /**
+     * Get configuration for a specific user (with fallback to role).
+     *
+     * @since    1.5.0
+     * @param    int       $user_id    Optional. User ID to get config for. Defaults to current user.
+     * @param    string    $key        Optional. Specific config key to get. If empty, returns all config.
+     * @return   mixed                 Configuration value(s)
+     */
+    private function get_user_config($user_id = null, $key = null) {
+        // If no user_id specified, use current user
+        if ($user_id === null) {
+            $user_id = get_current_user_id();
+        }
+
+        // Get all user configurations
+        $user_configs = get_option('wp_admin_organizer_user_configs', array());
+
+        // Check if user has personal config enabled
+        if (isset($user_configs[$user_id]) && !empty($user_configs[$user_id]['enabled'])) {
+            $config = $user_configs[$user_id];
+
+            // If specific key requested, return that
+            if ($key !== null) {
+                return isset($config[$key]) ? $config[$key] : array();
+            }
+
+            return $config;
+        }
+
+        // Fallback to role configuration
+        $user = get_userdata($user_id);
+        if ($user && !empty($user->roles)) {
+            $role = $user->roles[0];
+            return $this->get_role_config($role, $key);
+        }
+
+        // Last fallback: empty config
+        return $key !== null ? array() : array();
+    }
+
+    /**
+     * Save configuration for a specific user.
+     *
+     * @since    1.5.0
+     * @param    int      $user_id    User ID to save config for
+     * @param    string   $key        Config key to save
+     * @param    mixed    $value      Value to save
+     * @return   bool                 True on success, false on failure
+     */
+    private function save_user_config($user_id, $key, $value) {
+        // Get all user configurations
+        $user_configs = get_option('wp_admin_organizer_user_configs', array());
+
+        // Initialize user config if it doesn't exist
+        if (!isset($user_configs[$user_id])) {
+            $user_configs[$user_id] = array(
+                'enabled' => true,
+                'last_modified' => current_time('mysql')
+            );
+        }
+
+        // Set the value
+        $user_configs[$user_id][$key] = $value;
+        $user_configs[$user_id]['last_modified'] = current_time('mysql');
+
+        // Save back to database
+        return update_option('wp_admin_organizer_user_configs', $user_configs);
+    }
+
+    /**
+     * Check if user has personal configuration enabled.
+     *
+     * @since    1.5.0
+     * @param    int      $user_id    User ID to check
+     * @return   bool                 True if has personal config, false otherwise
+     */
+    private function has_personal_config($user_id) {
+        $user_configs = get_option('wp_admin_organizer_user_configs', array());
+        return isset($user_configs[$user_id]) && !empty($user_configs[$user_id]['enabled']);
+    }
+
+    /**
+     * Copy role configuration to user.
+     *
+     * @since    1.5.0
+     * @param    int      $user_id    User ID to copy config to
+     * @param    string   $role       Role to copy config from
+     * @return   bool                 True on success, false on failure
+     */
+    private function copy_from_role_to_user($user_id, $role) {
+        // Get role configuration
+        $role_config = $this->get_role_config($role);
+
+        // Get all user configurations
+        $user_configs = get_option('wp_admin_organizer_user_configs', array());
+
+        // Copy role config to user
+        $user_configs[$user_id] = array_merge($role_config, array(
+            'enabled' => true,
+            'copied_from_role' => $role,
+            'last_modified' => current_time('mysql')
+        ));
+
+        // Save back to database
+        return update_option('wp_admin_organizer_user_configs', $user_configs);
+    }
+
+    /**
+     * Reset user's personal configuration.
+     *
+     * @since    1.5.0
+     * @param    int      $user_id    User ID to reset config for
+     * @return   bool                 True on success, false on failure
+     */
+    private function reset_user_config($user_id) {
+        // Get all user configurations
+        $user_configs = get_option('wp_admin_organizer_user_configs', array());
+
+        // Remove user config
+        if (isset($user_configs[$user_id])) {
+            unset($user_configs[$user_id]);
+            return update_option('wp_admin_organizer_user_configs', $user_configs);
+        }
+
+        return true;
+    }
+
+    /**
+     * Enable personal configuration for user.
+     *
+     * @since    1.5.0
+     * @param    int      $user_id    User ID
+     * @return   bool                 True on success, false on failure
+     */
+    private function enable_personal_config($user_id) {
+        // Get user's role
+        $user = get_userdata($user_id);
+        if (!$user || empty($user->roles)) {
+            return false;
+        }
+
+        $role = $user->roles[0];
+
+        // Copy role config to user
+        return $this->copy_from_role_to_user($user_id, $role);
+    }
+
+    /**
+     * Get all users with personal configurations.
+     *
+     * @since    1.5.0
+     * @return   array    Array of user IDs with personal configs
+     */
+    private function get_users_with_personal_configs() {
+        $user_configs = get_option('wp_admin_organizer_user_configs', array());
+        $users_with_configs = array();
+
+        foreach ($user_configs as $user_id => $config) {
+            if (!empty($config['enabled'])) {
+                $users_with_configs[] = $user_id;
+            }
+        }
+
+        return $users_with_configs;
+    }
+
+    /**
+     * Get configuration based on hierarchy: user > role > default.
+     *
+     * @since    1.5.0
+     * @param    int       $user_id    Optional. User ID. Defaults to current user.
+     * @param    string    $key        Optional. Specific config key.
+     * @return   mixed                 Configuration value(s)
+     */
+    private function get_config($user_id = null, $key = null) {
+        // If no user_id specified, use current user
+        if ($user_id === null) {
+            $user_id = get_current_user_id();
+        }
+
+        // Try user config first (includes fallback to role)
+        return $this->get_user_config($user_id, $key);
+    }
+
+    /**
      * Register the stylesheets for the admin area.
      *
      * @since    1.0.0
@@ -369,28 +553,71 @@ class WP_Admin_Organizer_Admin {
         // Get the current admin menu and submenus
         global $menu, $submenu;
 
-        // Get all available roles
+        // Determine configuration mode
+        $current_user_id = get_current_user_id();
+        $is_admin = current_user_can('manage_options');
+
+        // Check what mode we're in: 'role', 'user', or 'personal'
+        $config_mode = isset($_GET['mode']) ? sanitize_text_field($_GET['mode']) : ($is_admin ? 'role' : 'personal');
+
+        // Get all available roles (for admin mode)
         $available_roles = $this->get_all_roles();
 
-        // Get the role we're currently editing (from URL or default to administrator)
-        $editing_role = isset($_GET['role']) && !empty($_GET['role']) ? sanitize_text_field($_GET['role']) : 'administrator';
+        // Get all users (for admin user management mode)
+        $all_users = $is_admin ? get_users(array('orderby' => 'display_name')) : array();
 
-        // Make sure the role exists
-        if (!array_key_exists($editing_role, $available_roles)) {
-            $editing_role = 'administrator';
+        // Get users with personal configs
+        $users_with_personal_configs = $this->get_users_with_personal_configs();
+
+        // Variables for the view
+        $editing_role = null;
+        $editing_user_id = null;
+        $editing_user = null;
+        $has_personal_config = false;
+        $config = array();
+
+        // Determine what configuration to load based on mode
+        if ($config_mode === 'role' && $is_admin) {
+            // Admin editing a role configuration
+            $editing_role = isset($_GET['role']) && !empty($_GET['role']) ? sanitize_text_field($_GET['role']) : 'administrator';
+
+            // Make sure the role exists
+            if (!array_key_exists($editing_role, $available_roles)) {
+                $editing_role = 'administrator';
+            }
+
+            $config = $this->get_role_config($editing_role);
+
+        } elseif ($config_mode === 'user' && $is_admin) {
+            // Admin editing a specific user configuration
+            $editing_user_id = isset($_GET['user_id']) && !empty($_GET['user_id']) ? intval($_GET['user_id']) : $current_user_id;
+            $editing_user = get_userdata($editing_user_id);
+
+            if (!$editing_user) {
+                $editing_user_id = $current_user_id;
+                $editing_user = get_userdata($current_user_id);
+            }
+
+            $has_personal_config = $this->has_personal_config($editing_user_id);
+            $config = $this->get_user_config($editing_user_id);
+
+        } else {
+            // Personal mode: user editing their own configuration
+            $config_mode = 'personal';
+            $editing_user_id = $current_user_id;
+            $editing_user = get_userdata($current_user_id);
+            $has_personal_config = $this->has_personal_config($current_user_id);
+            $config = $this->get_user_config($current_user_id);
         }
 
-        // Get configuration for the selected role
-        $role_config = $this->get_role_config($editing_role);
-
         // Extract configuration values
-        $saved_menu_order = isset($role_config['menu_order']) ? $role_config['menu_order'] : array();
-        $saved_separators = isset($role_config['separators']) ? $role_config['separators'] : array();
-        $hidden_items = isset($role_config['hidden_items']) ? $role_config['hidden_items'] : array();
-        $renamed_items = isset($role_config['renamed_items']) ? $role_config['renamed_items'] : array();
-        $favorite_items = isset($role_config['favorite_items']) ? $role_config['favorite_items'] : array();
-        $saved_submenu_order = isset($role_config['submenu_order']) ? $role_config['submenu_order'] : array();
-        $custom_icons = isset($role_config['custom_icons']) ? $role_config['custom_icons'] : array();
+        $saved_menu_order = isset($config['menu_order']) ? $config['menu_order'] : array();
+        $saved_separators = isset($config['separators']) ? $config['separators'] : array();
+        $hidden_items = isset($config['hidden_items']) ? $config['hidden_items'] : array();
+        $renamed_items = isset($config['renamed_items']) ? $config['renamed_items'] : array();
+        $favorite_items = isset($config['favorite_items']) ? $config['favorite_items'] : array();
+        $saved_submenu_order = isset($config['submenu_order']) ? $config['submenu_order'] : array();
+        $custom_icons = isset($config['custom_icons']) ? $config['custom_icons'] : array();
 
         include_once WP_ADMIN_ORGANIZER_PLUGIN_DIR . 'admin/partials/wp-admin-organizer-admin-display.php';
     }
@@ -406,82 +633,97 @@ class WP_Admin_Organizer_Admin {
             wp_send_json_error('Invalid nonce');
         }
 
-        // Check permissions
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('Permission denied');
-        }
+        // Check if we're saving for a role or a user
+        $config_mode = isset($_POST['config_mode']) ? sanitize_text_field($_POST['config_mode']) : 'role';
+        $current_user_id = get_current_user_id();
+        $is_admin = current_user_can('manage_options');
 
-        // Get the role we're saving for (from POST or default to administrator)
-        $role = isset($_POST['role']) && !empty($_POST['role']) ? sanitize_text_field($_POST['role']) : 'administrator';
+        // Determine what we're saving
+        $role = null;
+        $user_id = null;
 
-        // Verify role exists
-        $all_roles = $this->get_all_roles();
-        if (!array_key_exists($role, $all_roles)) {
-            wp_send_json_error('Invalid role');
+        if ($config_mode === 'role' && $is_admin) {
+            // Admin saving a role configuration
+            if (!$is_admin) {
+                wp_send_json_error('Permission denied');
+            }
+
+            $role = isset($_POST['role']) && !empty($_POST['role']) ? sanitize_text_field($_POST['role']) : 'administrator';
+
+            // Verify role exists
+            $all_roles = $this->get_all_roles();
+            if (!array_key_exists($role, $all_roles)) {
+                wp_send_json_error('Invalid role');
+            }
+
+        } elseif ($config_mode === 'user') {
+            // Saving a user configuration
+            $user_id = isset($_POST['user_id']) && !empty($_POST['user_id']) ? intval($_POST['user_id']) : $current_user_id;
+
+            // Check permissions: admin can edit any user, user can only edit themselves
+            if (!$is_admin && $user_id !== $current_user_id) {
+                wp_send_json_error('Permission denied');
+            }
+
+            // Verify user exists
+            $user = get_userdata($user_id);
+            if (!$user) {
+                wp_send_json_error('Invalid user');
+            }
+
+        } else {
+            // Personal mode: user editing their own config
+            $user_id = $current_user_id;
         }
 
         // Get the menu order from the POST data
         $menu_order = isset($_POST['menu_order']) ? $_POST['menu_order'] : array();
-
-        // Sanitize the menu order
         $menu_order = $this->sanitize_menu_order($menu_order);
-
-        // Save the menu order for this role
-        $this->save_role_config($role, 'menu_order', $menu_order);
 
         // Get the separators from the POST data
         $separators = isset($_POST['separators']) ? $_POST['separators'] : array();
-
-        // Sanitize the separators
         $separators = $this->sanitize_separators($separators);
-
-        // Save the separators for this role
-        $this->save_role_config($role, 'separators', $separators);
 
         // Get hidden items from POST data
         $hidden_items = isset($_POST['hidden_items']) ? $_POST['hidden_items'] : array();
-
-        // Sanitize hidden items
         $hidden_items = $this->sanitize_menu_order($hidden_items);
-
-        // Save hidden items for this role
-        $this->save_role_config($role, 'hidden_items', $hidden_items);
 
         // Get renamed items from POST data
         $renamed_items = isset($_POST['renamed_items']) ? $_POST['renamed_items'] : array();
-
-        // Sanitize renamed items
         $renamed_items = $this->sanitize_renamed_items($renamed_items);
-
-        // Save renamed items for this role
-        $this->save_role_config($role, 'renamed_items', $renamed_items);
 
         // Get favorite items from POST data
         $favorite_items = isset($_POST['favorite_items']) ? $_POST['favorite_items'] : array();
-
-        // Sanitize favorite items
         $favorite_items = $this->sanitize_menu_order($favorite_items);
-
-        // Save favorite items for this role
-        $this->save_role_config($role, 'favorite_items', $favorite_items);
 
         // Get submenu order from POST data
         $submenu_order = isset($_POST['submenu_order']) ? $_POST['submenu_order'] : array();
-
-        // Sanitize submenu order
         $submenu_order = $this->sanitize_submenu_order($submenu_order);
-
-        // Save submenu order for this role
-        $this->save_role_config($role, 'submenu_order', $submenu_order);
 
         // Get custom icons from POST data
         $custom_icons = isset($_POST['custom_icons']) ? $_POST['custom_icons'] : array();
-
-        // Sanitize custom icons
         $custom_icons = $this->sanitize_renamed_items($custom_icons);
 
-        // Save custom icons for this role
-        $this->save_role_config($role, 'custom_icons', $custom_icons);
+        // Save configuration based on mode
+        if ($role !== null) {
+            // Saving role configuration
+            $this->save_role_config($role, 'menu_order', $menu_order);
+            $this->save_role_config($role, 'separators', $separators);
+            $this->save_role_config($role, 'hidden_items', $hidden_items);
+            $this->save_role_config($role, 'renamed_items', $renamed_items);
+            $this->save_role_config($role, 'favorite_items', $favorite_items);
+            $this->save_role_config($role, 'submenu_order', $submenu_order);
+            $this->save_role_config($role, 'custom_icons', $custom_icons);
+        } else {
+            // Saving user configuration
+            $this->save_user_config($user_id, 'menu_order', $menu_order);
+            $this->save_user_config($user_id, 'separators', $separators);
+            $this->save_user_config($user_id, 'hidden_items', $hidden_items);
+            $this->save_user_config($user_id, 'renamed_items', $renamed_items);
+            $this->save_user_config($user_id, 'favorite_items', $favorite_items);
+            $this->save_user_config($user_id, 'submenu_order', $submenu_order);
+            $this->save_user_config($user_id, 'custom_icons', $custom_icons);
+        }
 
         wp_send_json_success('Menu order saved successfully');
     }
@@ -661,6 +903,101 @@ class WP_Admin_Organizer_Admin {
     }
 
     /**
+     * AJAX handler for enabling personal configuration.
+     *
+     * @since    1.5.0
+     */
+    public function enable_personal_configuration() {
+        // Check nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wp_admin_organizer_nonce')) {
+            wp_send_json_error('Invalid nonce');
+        }
+
+        // Get user ID
+        $user_id = get_current_user_id();
+        $target_user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : $user_id;
+
+        // Check permissions
+        if (!current_user_can('manage_options') && $target_user_id !== $user_id) {
+            wp_send_json_error('Permission denied');
+        }
+
+        // Enable personal configuration
+        if ($this->enable_personal_config($target_user_id)) {
+            wp_send_json_success('Personal configuration enabled');
+        } else {
+            wp_send_json_error('Failed to enable personal configuration');
+        }
+    }
+
+    /**
+     * AJAX handler for copying role configuration to user.
+     *
+     * @since    1.5.0
+     */
+    public function copy_role_to_user() {
+        // Check nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wp_admin_organizer_nonce')) {
+            wp_send_json_error('Invalid nonce');
+        }
+
+        // Get user ID and role
+        $user_id = get_current_user_id();
+        $target_user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : $user_id;
+        $role = isset($_POST['role']) ? sanitize_text_field($_POST['role']) : null;
+
+        // Check permissions
+        if (!current_user_can('manage_options') && $target_user_id !== $user_id) {
+            wp_send_json_error('Permission denied');
+        }
+
+        // If no role specified, use user's current role
+        if (!$role) {
+            $user = get_userdata($target_user_id);
+            if ($user && !empty($user->roles)) {
+                $role = $user->roles[0];
+            } else {
+                wp_send_json_error('Could not determine user role');
+            }
+        }
+
+        // Copy role configuration to user
+        if ($this->copy_from_role_to_user($target_user_id, $role)) {
+            wp_send_json_success('Role configuration copied to user');
+        } else {
+            wp_send_json_error('Failed to copy configuration');
+        }
+    }
+
+    /**
+     * AJAX handler for resetting user's personal configuration.
+     *
+     * @since    1.5.0
+     */
+    public function reset_personal_configuration() {
+        // Check nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wp_admin_organizer_nonce')) {
+            wp_send_json_error('Invalid nonce');
+        }
+
+        // Get user ID
+        $user_id = get_current_user_id();
+        $target_user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : $user_id;
+
+        // Check permissions
+        if (!current_user_can('manage_options') && $target_user_id !== $user_id) {
+            wp_send_json_error('Permission denied');
+        }
+
+        // Reset user configuration
+        if ($this->reset_user_config($target_user_id)) {
+            wp_send_json_success('Personal configuration reset');
+        } else {
+            wp_send_json_error('Failed to reset configuration');
+        }
+    }
+
+    /**
      * Reorganize the admin menu based on saved settings.
      *
      * @since    1.0.0
@@ -675,15 +1012,16 @@ class WP_Admin_Organizer_Admin {
         // Add the logo at the top of the menu if one is set
         $this->add_admin_logo();
 
-        // Get configuration for current user's role
-        $role_config = $this->get_role_config();
+        // Get configuration for current user (with fallback to role)
+        // This implements the hierarchy: user > role > default
+        $config = $this->get_config();
 
         // Extract configuration values
-        $saved_menu_order = isset($role_config['menu_order']) ? $role_config['menu_order'] : array();
-        $hidden_items = isset($role_config['hidden_items']) ? $role_config['hidden_items'] : array();
-        $renamed_items = isset($role_config['renamed_items']) ? $role_config['renamed_items'] : array();
-        $favorite_items = isset($role_config['favorite_items']) ? $role_config['favorite_items'] : array();
-        $custom_icons = isset($role_config['custom_icons']) ? $role_config['custom_icons'] : array();
+        $saved_menu_order = isset($config['menu_order']) ? $config['menu_order'] : array();
+        $hidden_items = isset($config['hidden_items']) ? $config['hidden_items'] : array();
+        $renamed_items = isset($config['renamed_items']) ? $config['renamed_items'] : array();
+        $favorite_items = isset($config['favorite_items']) ? $config['favorite_items'] : array();
+        $custom_icons = isset($config['custom_icons']) ? $config['custom_icons'] : array();
 
         // If we have a saved menu order, reorganize the menu
         if (!empty($saved_menu_order)) {
@@ -866,8 +1204,8 @@ class WP_Admin_Organizer_Admin {
     private function add_menu_separators() {
         global $menu;
 
-        // Get saved separators for current user's role
-        $separators = $this->get_role_config(null, 'separators');
+        // Get saved separators for current user (with fallback to role)
+        $separators = $this->get_config(null, 'separators');
         
         // If we have separators, add them to the menu
         if (!empty($separators)) {
@@ -977,8 +1315,8 @@ class WP_Admin_Organizer_Admin {
     public function reorganize_submenus() {
         global $submenu;
 
-        // Get saved submenu order for current user's role
-        $saved_submenu_order = $this->get_role_config(null, 'submenu_order');
+        // Get saved submenu order for current user (with fallback to role)
+        $saved_submenu_order = $this->get_config(null, 'submenu_order');
 
         if (empty($saved_submenu_order) || !is_array($submenu)) {
             return;
