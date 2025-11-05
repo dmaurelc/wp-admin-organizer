@@ -157,6 +157,12 @@ class WP_Admin_Organizer_Admin {
             'wp_admin_organizer_favorite_items',
             array('sanitize_callback' => array($this, 'sanitize_menu_order'))
         );
+
+        register_setting(
+            'wp_admin_organizer_settings',
+            'wp_admin_organizer_submenu_order',
+            array('sanitize_callback' => array($this, 'sanitize_submenu_order'))
+        );
     }
 
     /**
@@ -241,13 +247,38 @@ class WP_Admin_Organizer_Admin {
     }
 
     /**
+     * Sanitize the submenu order option.
+     *
+     * @since    1.3.0
+     * @param    array    $input    The submenu order array.
+     * @return   array    The sanitized submenu order array.
+     */
+    public function sanitize_submenu_order($input) {
+        if (!is_array($input)) {
+            return array();
+        }
+
+        $sanitized_input = array();
+
+        foreach ($input as $parent_slug => $submenu_items) {
+            $sanitized_parent = sanitize_text_field($parent_slug);
+
+            if (is_array($submenu_items)) {
+                $sanitized_input[$sanitized_parent] = array_map('sanitize_text_field', $submenu_items);
+            }
+        }
+
+        return $sanitized_input;
+    }
+
+    /**
      * Render the admin page for the plugin.
      *
      * @since    1.0.0
      */
     public function display_plugin_admin_page() {
-        // Get the current admin menu
-        global $menu;
+        // Get the current admin menu and submenus
+        global $menu, $submenu;
 
         // Get saved menu order
         $saved_menu_order = get_option('wp_admin_organizer_menu_order', array());
@@ -263,6 +294,9 @@ class WP_Admin_Organizer_Admin {
 
         // Get favorite items
         $favorite_items = get_option('wp_admin_organizer_favorite_items', array());
+
+        // Get saved submenu order
+        $saved_submenu_order = get_option('wp_admin_organizer_submenu_order', array());
 
         include_once WP_ADMIN_ORGANIZER_PLUGIN_DIR . 'admin/partials/wp-admin-organizer-admin-display.php';
     }
@@ -327,6 +361,15 @@ class WP_Admin_Organizer_Admin {
 
         // Save favorite items
         update_option('wp_admin_organizer_favorite_items', $favorite_items);
+
+        // Get submenu order from POST data
+        $submenu_order = isset($_POST['submenu_order']) ? $_POST['submenu_order'] : array();
+
+        // Sanitize submenu order
+        $submenu_order = $this->sanitize_submenu_order($submenu_order);
+
+        // Save submenu order
+        update_option('wp_admin_organizer_submenu_order', $submenu_order);
 
         wp_send_json_success('Menu order saved successfully');
     }
@@ -417,6 +460,7 @@ class WP_Admin_Organizer_Admin {
             'hidden_items' => get_option('wp_admin_organizer_hidden_items', array()),
             'renamed_items' => get_option('wp_admin_organizer_renamed_items', array()),
             'favorite_items' => get_option('wp_admin_organizer_favorite_items', array()),
+            'submenu_order' => get_option('wp_admin_organizer_submenu_order', array()),
             'version' => WP_ADMIN_ORGANIZER_VERSION,
             'exported_at' => current_time('mysql')
         );
@@ -478,6 +522,11 @@ class WP_Admin_Organizer_Admin {
         // Import favorite items
         if (isset($config_data['favorite_items'])) {
             update_option('wp_admin_organizer_favorite_items', $this->sanitize_menu_order($config_data['favorite_items']));
+        }
+
+        // Import submenu order
+        if (isset($config_data['submenu_order'])) {
+            update_option('wp_admin_organizer_submenu_order', $this->sanitize_submenu_order($config_data['submenu_order']));
         }
 
         wp_send_json_success('Configuration imported successfully');
@@ -776,5 +825,57 @@ class WP_Admin_Organizer_Admin {
             '',
             $class
         );
+    }
+
+    /**
+     * Reorganize submenus based on saved settings.
+     *
+     * @since    1.3.0
+     */
+    public function reorganize_submenus() {
+        global $submenu;
+
+        // Get saved submenu order
+        $saved_submenu_order = get_option('wp_admin_organizer_submenu_order', array());
+
+        if (empty($saved_submenu_order) || !is_array($submenu)) {
+            return;
+        }
+
+        // Loop through each parent menu that has custom submenu order
+        foreach ($saved_submenu_order as $parent_slug => $submenu_slugs) {
+            // Check if this parent menu has submenus
+            if (!isset($submenu[$parent_slug]) || !is_array($submenu[$parent_slug])) {
+                continue;
+            }
+
+            $current_submenu = $submenu[$parent_slug];
+            $new_submenu = array();
+            $position = 0;
+
+            // Add submenus in the saved order
+            foreach ($submenu_slugs as $submenu_slug) {
+                // Find the submenu item
+                foreach ($current_submenu as $index => $sub_item) {
+                    if (isset($sub_item[2]) && $sub_item[2] === $submenu_slug) {
+                        $new_submenu[$position] = $sub_item;
+                        unset($current_submenu[$index]);
+                        $position++;
+                        break;
+                    }
+                }
+            }
+
+            // Add any remaining submenus that weren't in the saved order
+            foreach ($current_submenu as $sub_item) {
+                $new_submenu[$position] = $sub_item;
+                $position++;
+            }
+
+            // Replace the submenu with the reordered version
+            if (!empty($new_submenu)) {
+                $submenu[$parent_slug] = $new_submenu;
+            }
+        }
     }
 }

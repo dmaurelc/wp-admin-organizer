@@ -119,6 +119,49 @@ if (!defined('WPINC')) {
                     echo '<a href="#" class="toggle-favorite" title="' . ($is_favorite ? __('Remove from Favorites', 'wp-admin-organizer') : __('Add to Favorites', 'wp-admin-organizer')) . '"><span class="dashicons dashicons-star-' . ($is_favorite ? 'filled' : 'empty') . '"></span></a>';
                     echo '<a href="#" class="toggle-visibility" title="' . ($is_hidden ? __('Show', 'wp-admin-organizer') : __('Hide', 'wp-admin-organizer')) . '"><span class="dashicons dashicons-' . ($is_hidden ? 'hidden' : 'visibility') . '"></span></a>';
                     echo '<input type="hidden" class="position" value="' . esc_attr($position) . '">';
+
+                    // Check if this menu item has submenus
+                    if (isset($submenu[$item['id']]) && !empty($submenu[$item['id']])) {
+                        echo '<div class="wp-admin-organizer-submenu-list" data-parent-id="' . esc_attr($item['id']) . '">';
+
+                        // Get saved submenu order for this parent
+                        $parent_submenu_order = isset($saved_submenu_order[$item['id']]) ? $saved_submenu_order[$item['id']] : array();
+
+                        // Prepare submenu items
+                        $submenu_items_to_display = array();
+
+                        if (!empty($parent_submenu_order)) {
+                            // Display in saved order
+                            foreach ($parent_submenu_order as $sub_slug) {
+                                foreach ($submenu[$item['id']] as $sub_item) {
+                                    if (isset($sub_item[2]) && $sub_item[2] === $sub_slug) {
+                                        $submenu_items_to_display[] = $sub_item;
+                                        break;
+                                    }
+                                }
+                            }
+                            // Add remaining items not in saved order
+                            foreach ($submenu[$item['id']] as $sub_item) {
+                                if (!in_array($sub_item[2], $parent_submenu_order)) {
+                                    $submenu_items_to_display[] = $sub_item;
+                                }
+                            }
+                        } else {
+                            // Use default order
+                            $submenu_items_to_display = $submenu[$item['id']];
+                        }
+
+                        // Display submenu items
+                        foreach ($submenu_items_to_display as $sub_item) {
+                            echo '<div class="wp-admin-organizer-submenu-item" data-submenu-id="' . esc_attr($sub_item[2]) . '">';
+                            echo '<div class="wp-admin-organizer-submenu-drag-handle"></div>';
+                            echo '<div class="wp-admin-organizer-submenu-item-title">' . wp_strip_all_tags($sub_item[0]) . '</div>';
+                            echo '</div>';
+                        }
+
+                        echo '</div>';
+                    }
+
                     echo '</div>';
                 } else if ($item['type'] === 'separator') {
                     // Display separator with position number integrated in the title

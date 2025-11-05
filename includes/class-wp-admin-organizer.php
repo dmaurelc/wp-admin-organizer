@@ -156,6 +156,9 @@ class WP_Admin_Organizer {
 
         // Apply menu reorganization
         $this->loader->add_action('admin_menu', $plugin_admin, 'reorganize_admin_menu', 999);
+
+        // Apply submenu reorganization
+        $this->loader->add_action('admin_menu', $plugin_admin, 'reorganize_submenus', 1000);
     }
 
 

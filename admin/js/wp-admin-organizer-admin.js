@@ -18,10 +18,18 @@
     // Initialize sortable for menu items
     $(".wp-admin-organizer-menu-list").sortable({
       placeholder: "wp-admin-organizer-menu-item ui-sortable-placeholder",
+      items: "> .wp-admin-organizer-menu-item, > .wp-admin-organizer-separator-item",
       update: function (event, ui) {
         // Update position numbers
         updatePositionNumbers();
       },
+    });
+
+    // Initialize sortable for submenu items
+    $(".wp-admin-organizer-submenu-list").sortable({
+      placeholder: "wp-admin-organizer-submenu-item ui-sortable-placeholder",
+      items: "> .wp-admin-organizer-submenu-item",
+      connectWith: ".wp-admin-organizer-submenu-list",
     });
 
     // Initialize dialog for messages
@@ -472,6 +480,21 @@
       favoriteItems.push($(this).data("menu-id"));
     });
 
+    // Get submenu order
+    var submenuOrder = {};
+    $(".wp-admin-organizer-submenu-list").each(function () {
+      var parentId = $(this).data("parent-id");
+      var submenuItems = [];
+      $(this)
+        .find(".wp-admin-organizer-submenu-item")
+        .each(function () {
+          submenuItems.push($(this).data("submenu-id"));
+        });
+      if (submenuItems.length > 0) {
+        submenuOrder[parentId] = submenuItems;
+      }
+    });
+
     // Send the AJAX request
     $.ajax({
       url: wp_admin_organizer.ajax_url,
@@ -484,6 +507,7 @@
         hidden_items: hiddenItems,
         renamed_items: renamedItems,
         favorite_items: favoriteItems,
+        submenu_order: submenuOrder,
       },
       success: function (response) {
         if (response.success) {

@@ -678,3 +678,85 @@
 .wp-admin-organizer-favorite-item {
   background: rgba(241, 196, 15, 0.05) !important;
 }
+
+/* Submenu list container */
+.wp-admin-organizer-submenu-list {
+  margin: 10px 0 10px 25px;
+  padding: 10px;
+  background: #fafafa;
+  border-left: 3px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+/* Submenu item */
+.wp-admin-organizer-submenu-item {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  padding: 10px 14px;
+  cursor: move;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  font-size: 13px;
+}
+
+.wp-admin-organizer-submenu-item:last-child {
+  margin-bottom: 0;
+}
+
+.wp-admin-organizer-submenu-item:before {
+  content: "⋮⋮";
+  font-size: 14px;
+  color: #c3c4c7;
+  margin-right: 8px;
+  cursor: move;
+}
+
+.wp-admin-organizer-submenu-item:hover {
+  background: #f5f9fc;
+  border-color: #8c8f94;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.wp-admin-organizer-submenu-item:hover:before {
+  color: #2271b1;
+}
+
+.wp-admin-organizer-submenu-item.ui-sortable-helper {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  border-color: #2271b1;
+  background: #fff;
+}
+
+.wp-admin-organizer-submenu-item.ui-sortable-placeholder {
+  border: 2px dashed #c3c4c7;
+  background: #f6f7f7;
+  visibility: visible !important;
+  height: 36px;
+  border-radius: 4px;
+}
+
+/* Submenu item title */
+.wp-admin-organizer-submenu-item-title {
+  color: #50575e;
+  font-weight: 500;
+  flex: 1;
+}
+
+.wp-admin-organizer-submenu-drag-handle {
+  display: none;
+}
+
+/* Responsive submenu */
+@media screen and (max-width: 782px) {
+  .wp-admin-organizer-submenu-list {
+    margin-left: 15px;
+    padding: 8px;
+  }
+
+  .wp-admin-organizer-submenu-item {
+    padding: 8px 12px;
+  }
+}
