@@ -4,6 +4,25 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2025-11-05
+### Added
+- **Complete Frontend UI for User-Based Configurations** - Fully implemented user configuration interface
+- Mode tabs styling with active/inactive states for switching between admin role editing, admin user editing, and personal user configuration
+- User/role selector container with dropdown styling
+- Status badges showing personal configuration status (active/inactive)
+- Personal config status section with visual indicators
+
+### Changed
+- Enhanced JavaScript with complete mode switching functionality
+- User selector now triggers configuration mode changes
+- Three new AJAX handlers for user configuration management:
+  - `enablePersonalConfiguration()` - Allow users to create personal configs
+  - `copyRoleToUser()` - Admins can copy role defaults to specific users
+  - `resetPersonalConfiguration()` - Users/admins can disable personal configs
+- Updated `saveMenuOrder()` to support `config_mode` and `user_id` parameters
+- Added button-danger CSS variant for reset/destructive actions
+- Configuration now fully supports three-mode operation with UI
+
 ## [1.5.0] - 2025-11-05
 ### Added
 - **User-Based Configuration System** 👤 - Individual users can now have personalized menu configurations
