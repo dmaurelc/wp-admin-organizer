@@ -244,6 +244,18 @@
       }
     );
 
+    // Handle submenu toggle button click (accordion)
+    $(".wp-admin-organizer-menu-list").on(
+      "click",
+      ".toggle-submenu",
+      function (e) {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent triggering the title click event
+        var $item = $(this).closest(".wp-admin-organizer-menu-item");
+        $item.toggleClass("submenu-expanded");
+      }
+    );
+
     // Handle menu item title click for inline editing (rename functionality)
     $(".wp-admin-organizer-menu-list").on(
       "click",

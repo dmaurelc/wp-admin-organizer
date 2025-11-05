@@ -613,7 +613,7 @@ class WP_Admin_Organizer_Admin {
                     // Find the favorite item in the menu
                     foreach ($menu as $index => $item) {
                         if (isset($item[2]) && $item[2] === $fav_item_id) {
-                            // Clone the item for favorites
+                            // Clone the item for favorites (don't remove from original yet)
                             $fav_item = $item;
 
                             // Apply renamed title if exists
@@ -651,33 +651,44 @@ class WP_Admin_Organizer_Admin {
 
             // Loop through the saved menu order
             foreach ($saved_menu_order as $item_id) {
+                // Find the menu item in the current menu first
+                $found_item = null;
+                $found_index = null;
+                foreach ($menu as $index => $item) {
+                    if (isset($item[2]) && $item[2] === $item_id) {
+                        $found_item = $item;
+                        $found_index = $index;
+                        break;
+                    }
+                }
+
+                // If item not found, skip
+                if ($found_item === null) {
+                    continue;
+                }
+
+                // Remove the item from the original menu regardless of whether it's hidden
+                unset($menu[$found_index]);
+
                 // Skip hidden items ONLY if we're not on the plugin settings page
                 if (!$is_plugin_page && in_array($item_id, $hidden_items)) {
                     continue;
                 }
 
-                // Find the menu item in the current menu
-                foreach ($menu as $index => $item) {
-                    if (isset($item[2]) && $item[2] === $item_id) {
-                        // Apply renamed title if exists
-                        if (isset($renamed_items[$item_id])) {
-                            $item[0] = $renamed_items[$item_id];
-                        }
-
-                        // Apply custom icon if exists
-                        if (isset($custom_icons[$item_id]) && !empty($custom_icons[$item_id])) {
-                            $item[6] = $custom_icons[$item_id];
-                        }
-
-                        // Add the item to the new menu at the next position
-                        $new_menu[$position] = $item;
-                        // Remove the item from the original menu
-                        unset($menu[$index]);
-                        // Increment the position
-                        $position += 10;
-                        break;
-                    }
+                // Apply renamed title if exists
+                if (isset($renamed_items[$item_id])) {
+                    $found_item[0] = $renamed_items[$item_id];
                 }
+
+                // Apply custom icon if exists
+                if (isset($custom_icons[$item_id]) && !empty($custom_icons[$item_id])) {
+                    $found_item[6] = $custom_icons[$item_id];
+                }
+
+                // Add the item to the new menu at the next position
+                $new_menu[$position] = $found_item;
+                // Increment the position
+                $position += 10;
             }
 
             // Add any remaining items to the end of the new menu

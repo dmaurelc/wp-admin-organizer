@@ -679,13 +679,55 @@
   background: rgba(241, 196, 15, 0.05) !important;
 }
 
+/* Toggle submenu button */
+.toggle-submenu {
+  color: #787c82;
+  text-decoration: none;
+  padding: 5px;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 3px;
+}
+
+.toggle-submenu:hover {
+  color: #2271b1;
+  background: rgba(34, 113, 177, 0.1);
+}
+
+.toggle-submenu:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px #2271b1;
+}
+
+.toggle-submenu .dashicons {
+  transition: transform 0.2s ease;
+}
+
+.wp-admin-organizer-menu-item.submenu-expanded .toggle-submenu .dashicons {
+  transform: rotate(180deg);
+}
+
 /* Submenu list container */
 .wp-admin-organizer-submenu-list {
-  margin: 10px 0 10px 25px;
-  padding: 10px;
+  margin: 10px 0 0 0;
+  padding: 0;
   background: #fafafa;
-  border-left: 3px solid #e0e0e0;
+  border-left: 3px solid #d0d0d0;
   border-radius: 4px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.wp-admin-organizer-menu-item.submenu-expanded .wp-admin-organizer-submenu-list {
+  max-height: 2000px;
+  opacity: 1;
+  padding: 10px;
+  margin-top: 10px;
 }
 
 /* Submenu item */

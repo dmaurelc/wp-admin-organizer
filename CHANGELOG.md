@@ -4,6 +4,28 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-11-05
+### Fixed
+- **CRITICAL**: Hidden items now correctly disappear from WordPress admin sidebar
+- Previous bug where hidden items remained visible in admin menu has been fixed
+- Hidden items are now properly removed from the menu array
+
+### Changed
+- **Submenu UX Improvement**: Converted submenus to accordion-style display
+- Submenus are now hidden by default and expand/collapse with a toggle button
+- Added smooth transitions and animations for submenu expansion
+- Improved visual hierarchy with arrow indicator that rotates on expand
+- Prevents submenu lists from cluttering the configuration interface
+- Better organization for menus with many submenu items
+
+### Technical
+- Refactored `reorganize_admin_menu()` to properly unset hidden items before skipping them
+- Added accordion CSS with max-height transitions and opacity animations
+- Implemented `.submenu-expanded` class for managing accordion state
+- Added `.toggle-submenu` button with dashicon arrow indicator
+- JavaScript handler for accordion toggle with stopPropagation to prevent conflicts
+- Fixed logic where `continue` was called before `unset()`, preventing item removal
+
 ## [1.3.0] - 2025-11-05
 ### Added
 - **Reorganize Submenus**: Drag and drop support for submenu items within each menu
