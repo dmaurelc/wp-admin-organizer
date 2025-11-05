@@ -1,8 +1,73 @@
 # WP Admin Organizer - Features Guide
 
-## Version 1.3.1 - Latest Features
+## Version 1.4.0 - Latest Features
 
-### 1. Reorganize Submenus 🆕 (with Accordion)
+### 1. Role-Based Configuration Profiles 🎯 **NEW!**
+
+**How to use:**
+- Click the role selector dropdown in the configuration page header
+- Choose between Administrator, Editor, Author, Contributor, or Subscriber
+- Each role has completely independent menu configuration settings
+- All changes for that role are saved separately
+- When users log in, they automatically see their role's menu configuration
+
+**What can be configured per role:**
+- Menu item order and position
+- Hidden/visible items
+- Renamed items
+- Favorite items
+- Submenu organization
+- Custom icons
+- Separators (simple and text)
+
+**Visual indicators:**
+- Role selector dropdown in the top header
+- Clear indication of which role's configuration you're editing
+- Separate data for each role stored independently
+
+**Use cases:**
+- Give editors a simplified menu with only relevant items
+- Give authors limited menu access
+- Configure different workflows for different user types
+- White-label the admin experience per user role
+- Reduce complexity for content contributors
+- Perfect for agencies managing multiple clients
+
+**Important notes:**
+- Each role can have a completely different menu layout
+- Configuration automatically applies based on user's role
+- Administrator role has access to all configuration options
+- Existing configurations automatically migrate to administrator role on upgrade
+- No data loss during upgrade
+
+### 2. Search/Filter Menu Items 🔍 **NEW!**
+
+**How to use:**
+- Type in the search box at the top of the configuration interface
+- Menu items are filtered in real-time as you type
+- Search by menu item title or menu ID
+- Clear the search to see all items again
+- Essential for WordPress sites with many plugins
+
+**Visual feedback:**
+- Instant filtering - no need to press enter
+- Shows only matching menu items
+- Separators hidden during search for cleaner view
+- Search box with magnifying glass icon
+
+**Use cases:**
+- Quickly find specific menu items in large menus
+- Navigate sites with 50+ plugins installed
+- Faster configuration when searching for specific items
+- Efficient workflow for organizing complex admin interfaces
+
+**Important notes:**
+- Search is case-insensitive
+- Searches both display names and menu IDs
+- Hidden and visible items both appear in search results
+- Great for menus with many items
+
+### 3. Reorganize Submenus (with Accordion)
 
 **How to use:**
 - When you have a menu item with submenus, they now appear in the configuration interface
@@ -213,12 +278,19 @@ For bugs, feature requests, or questions:
 
 ---
 
-**Version**: 1.3.1
+**Version**: 1.4.0
 **Last Updated**: 2025-11-05
 
 ## Changelog
 
-### v1.3.1 (Current - Latest)
+### v1.4.0 (Current - Latest) 🚀
+- ✨ **NEW**: Role-Based Configuration Profiles - Different menu layouts per user role
+- ✨ **NEW**: Search/Filter Menu Items - Real-time search for quick menu item finding
+- 🔄 **IMPROVED**: Export/Import now supports multiple role configurations
+- 🔧 **IMPROVED**: Backward compatibility - existing configs auto-migrate to new format
+- 📱 **IMPROVED**: Enhanced UI with role selector and search field in header
+
+### v1.3.1
 - 🐛 **CRITICAL FIX**: Hidden items now correctly disappear from WordPress admin sidebar
 - 🎨 **IMPROVED**: Submenu display converted to accordion-style (collapsed by default)
 - 🎨 **IMPROVED**: Added smooth animations and arrow indicator for submenu expansion
@@ -228,16 +300,11 @@ For bugs, feature requests, or questions:
 - ✨ **NEW**: Reorganize Submenus with drag and drop
 - ✨ **NEW**: Custom Icons backend infrastructure
 - 🎨 **IMPROVED**: Enhanced export/import with submenu order and custom icons
-- 🎨 **IMPROVED**: Better menu organization capabilities
 
 ### v1.2.0
 - ✨ **NEW**: Favorites/Quick Access functionality
 - 🐛 **FIXED**: Hidden items now visible in configuration for reactivation
 - 🐛 **FIXED**: Inline editing can be cancelled with ESC key
-- 🎨 **IMPROVED**: Better inline editing UX
 
 ### v1.1.0
-- Initial release of advanced features
-- Hide/Show menu items
-- Rename menu items
-- Export/Import configurations
+- Initial release of advanced features: Hide/Show, Rename, Export/Import
