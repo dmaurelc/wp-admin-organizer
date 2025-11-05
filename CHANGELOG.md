@@ -4,6 +4,26 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-11-05
+### Added
+- **User-Based Configuration System** 👤 - Individual users can now have personalized menu configurations
+- User configuration system with three-mode operation: admin role editing, admin user editing, and personal user configuration
+- `get_user_config()` method to retrieve user-specific menu configurations with role fallback
+- `save_user_config()` method to persist user settings separately from role settings
+- `has_personal_config()` method to check if user has personalized settings
+- User configuration UI with mode tabs and user/role selectors
+- Status badges showing configuration mode and source (personal, role, or default)
+- AJAX handlers for enabling personal configs, copying role settings to users, and resetting user configurations
+- Database storage via `wp_admin_organizer_user_configs` option
+- Permission model distinguishing admin capabilities from standard user access
+- Users can now maintain separate menu organization settings while admins manage role defaults
+
+### Technical
+- New configuration hierarchy: personal user settings > role-based defaults > system defaults
+- Enhanced permission checking for user vs admin configuration access
+- New UI components for three-mode configuration interface
+- Database structure using `wp_admin_organizer_user_configs` option
+
 ## [1.4.3] - 2025-11-05
 ### Fixed
 - **Action Button Overflow**: Fixed action buttons (accordion toggle, favorite star, visibility eye) overflowing outside menu item header
