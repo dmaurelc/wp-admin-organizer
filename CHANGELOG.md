@@ -4,6 +4,30 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2025-11-05
+### Changed
+- **Redesigned Admin Interface** - Modern, gradient header replacing WordPress default styling
+- **Compact Configuration Section** - Optimized layout with inline selectors and compact buttons
+- Header now uses purple gradient (from #667eea to #764ba2) for premium appearance
+- Configuration mode switcher now uses icons and compact button layout
+- User selector integrated directly in header with action buttons
+- Personal config status bar redesigned for better visibility
+- Added smooth animations and modern color scheme throughout
+
+### Added
+- **Quick Access Admin Bar Menu** - New "Menu Organizer" item in WordPress admin bar
+- Allows users to quickly access plugin settings from anywhere in WordPress
+- Shows different options for admins vs regular users
+- Hover tooltip with description
+- Settings link available without entering Settings menu
+
+### Improved
+- **Responsive Design** - Better mobile/tablet experience with flex wrapping
+- Smaller header for mobile devices while maintaining functionality
+- Buttons stack properly on narrow screens
+- Selector dropdowns expand to full width on mobile
+- Better visual hierarchy on all screen sizes
+
 ## [1.5.1] - 2025-11-05
 ### Added
 - **Complete Frontend UI for User-Based Configurations** - Fully implemented user configuration interface

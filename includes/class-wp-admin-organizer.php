@@ -146,7 +146,10 @@ class WP_Admin_Organizer {
         // Enqueue styles and scripts
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
-        
+
+        // Add admin bar menu item for quick access
+        $this->loader->add_action('admin_bar_menu', $plugin_admin, 'add_admin_bar_menu', 999);
+
         // Register AJAX handlers
         $this->loader->add_action('wp_ajax_save_menu_order', $plugin_admin, 'save_menu_order');
         $this->loader->add_action('wp_ajax_add_separator', $plugin_admin, 'add_separator');

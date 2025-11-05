@@ -14,32 +14,32 @@
 
 /* Admin page header */
 .wp-admin-organizer-header {
-  margin-bottom: 30px;
-  background-color: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 24px 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.15);
 }
 
 .wp-admin-organizer-header-top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 30px;
+  align-items: center;
+  gap: 24px;
   flex-wrap: wrap;
 }
 
 .wp-admin-organizer-header-title {
   flex: 1;
-  min-width: 300px;
+  min-width: 250px;
 }
 
 .wp-admin-organizer-header h1 {
-  margin-bottom: 12px;
-  margin-top: 0;
-  color: #1d2327;
-  font-size: 24px;
-  font-weight: 500;
+  margin: 0;
+  color: #fff;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
 }
 
 .wp-admin-organizer-header p {
@@ -49,38 +49,206 @@
   margin-bottom: 0;
 }
 
-/* Role selector */
-.wp-admin-organizer-role-selector {
-  background: #f6f7f7;
-  padding: 15px 20px;
+/* Compact Configuration Selector */
+.wp-admin-organizer-config-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 300px;
+}
+
+.config-mode-switcher {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.mode-tab-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid transparent;
   border-radius: 6px;
-  border: 1px solid #dcdcde;
-  min-width: 280px;
-}
-
-.wp-admin-organizer-role-selector label {
-  display: block;
-  font-weight: 600;
-  color: #1d2327;
-  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.wp-admin-organizer-role-selector select {
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 6px 10px;
-  border: 1px solid #8c8f94;
-  border-radius: 4px;
-  font-size: 14px;
+.mode-tab-compact:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
 }
 
-.wp-admin-organizer-role-selector .description {
-  display: block;
+.mode-tab-compact.active {
+  background: rgba(255, 255, 255, 0.95);
+  color: #667eea;
+  border-color: transparent;
+}
+
+.mode-tab-compact .icon-sm {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+}
+
+.badge-compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  color: #fff;
   font-size: 12px;
-  color: #646970;
-  font-style: italic;
-  line-height: 1.4;
+  font-weight: 600;
+}
+
+.selector-inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.select-compact {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 13px;
+  min-width: 180px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.select-compact:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.select-compact option {
+  background: #667eea;
+  color: #fff;
+}
+
+.user-actions-compact {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-action-compact {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-secondary-compact {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary-compact:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary-compact {
+  background: #fff;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.btn-primary-compact:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.btn-danger-compact {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fff;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.btn-danger-compact:hover {
+  background: rgba(239, 68, 68, 0.5);
+}
+
+/* Personal Config Compact */
+.wp-admin-organizer-personal-config-compact {
+  flex: 1;
+  min-width: 300px;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.active .status-dot {
+  background: #4ade80;
+}
+
+.status-indicator.inactive .status-dot {
+  background: rgba(255, 255, 255, 0.5);
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Old Role selector (kept for backward compat) */
+.wp-admin-organizer-role-selector {
+  display: none;
 }
 
 /* Configuration selector with mode tabs */
@@ -857,6 +1025,31 @@
 }
 
 /* Responsive */
+@media screen and (max-width: 1024px) {
+  .wp-admin-organizer-header-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wp-admin-organizer-config-compact,
+  .wp-admin-organizer-personal-config-compact {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .selector-inline {
+    flex-direction: column;
+  }
+
+  .select-compact {
+    min-width: 100%;
+  }
+
+  .mode-toggle {
+    flex-wrap: wrap;
+  }
+}
+
 @media screen and (max-width: 960px) {
   .wp-admin-organizer-content {
     flex-direction: column;
@@ -868,6 +1061,25 @@
 
   .wp-admin-organizer-menu-items {
     min-width: auto;
+  }
+
+  .status-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .status-indicator {
+    width: 100%;
+  }
+
+  .user-actions-compact {
+    width: 100%;
+  }
+
+  .btn-action-compact {
+    flex: 1;
+    justify-content: center;
   }
 }
 

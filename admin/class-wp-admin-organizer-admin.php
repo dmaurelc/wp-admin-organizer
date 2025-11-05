@@ -1364,4 +1364,49 @@ class WP_Admin_Organizer_Admin {
             }
         }
     }
+
+    /**
+     * Add Admin Bar Menu Item for quick access to plugin settings
+     *
+     * @since 1.5.2
+     */
+    public function add_admin_bar_menu($admin_bar) {
+        if (!is_admin_bar_showing()) {
+            return;
+        }
+
+        $user = wp_get_current_user();
+        if (empty($user->ID)) {
+            return;
+        }
+
+        // Only show if user can manage options (admin) or if non-admin user accessing own settings
+        if (!current_user_can('manage_options') && !current_user_can('edit_posts')) {
+            return;
+        }
+
+        $admin_bar->add_menu(array(
+            'id'     => 'wp-admin-organizer-menu',
+            'parent' => null,
+            'group'  => null,
+            'title'  => '<span class="ab-icon" style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1;">⚙</span> ' . __('Menu Organizer', 'wp-admin-organizer'),
+            'href'   => admin_url('admin.php?page=wp-admin-organizer'),
+            'meta'   => array(
+                'title' => __('Configure menu organization', 'wp-admin-organizer'),
+            ),
+        ));
+
+        // Add submenu for personal config if applicable
+        if (!current_user_can('manage_options')) {
+            $admin_bar->add_menu(array(
+                'id'     => 'wp-admin-organizer-personal',
+                'parent' => 'wp-admin-organizer-menu',
+                'title'  => __('My Configuration', 'wp-admin-organizer'),
+                'href'   => admin_url('admin.php?page=wp-admin-organizer'),
+                'meta'   => array(
+                    'title' => __('Manage your personal menu configuration', 'wp-admin-organizer'),
+                ),
+            ));
+        }
+    }
 }
