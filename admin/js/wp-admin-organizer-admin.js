@@ -220,35 +220,74 @@
       ".wp-admin-organizer-menu-item-title",
       function (e) {
         e.preventDefault();
+
+        // Don't open editor if one is already open
+        if ($(".edit-menu-item-title").length > 0) {
+          return;
+        }
+
         var $item = $(this).closest(".wp-admin-organizer-menu-item");
-        var currentText = $(this).text();
+        var $title = $(this);
+        var currentText = $title.text();
 
         // Remove position number from text
         var textWithoutPosition = currentText.replace(/^#\d+\s*-\s*/, "");
 
+        // Store original text for cancel functionality
+        var originalText = textWithoutPosition;
+
         // Create an input field for editing
         var $input = $(
           '<input type="text" class="edit-menu-item-title" value="' +
-            textWithoutPosition +
+            $("<div>").text(textWithoutPosition).html() +
             '">'
         );
-        $(this).hide().after($input);
+        $title.hide().after($input);
         $input.focus().select();
 
-        // Handle input blur and enter key
-        $input.on("blur keypress", function (e) {
-          if (e.type === "blur" || (e.type === "keypress" && e.which === 13)) {
-            var newText = $(this).val();
+        // Handle input blur, enter key, and escape key
+        $input.on("blur keydown", function (e) {
+          // Cancel on Escape key
+          if (e.type === "keydown" && e.which === 27) {
+            e.preventDefault();
+            $title.show();
+            $(this).remove();
+            return;
+          }
+
+          // Save on Enter key
+          if (e.type === "keydown" && e.which === 13) {
+            e.preventDefault();
+            var newText = $(this).val().trim();
             var positionNum = $item.find(".position").val();
+
+            if (newText === "") {
+              newText = originalText;
+            }
 
             // Store the custom name as a data attribute
             $item.data("custom-name", newText);
 
             // Update the title
-            $item
-              .find(".wp-admin-organizer-menu-item-title")
-              .text("#" + positionNum + " - " + newText)
-              .show();
+            $title.text("#" + positionNum + " - " + newText).show();
+            $(this).remove();
+            return;
+          }
+
+          // Save on blur (clicking outside)
+          if (e.type === "blur") {
+            var newText = $(this).val().trim();
+            var positionNum = $item.find(".position").val();
+
+            if (newText === "") {
+              newText = originalText;
+            }
+
+            // Store the custom name as a data attribute
+            $item.data("custom-name", newText);
+
+            // Update the title
+            $title.text("#" + positionNum + " - " + newText).show();
             $(this).remove();
           }
         });

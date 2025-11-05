@@ -467,6 +467,10 @@ class WP_Admin_Organizer_Admin {
     public function reorganize_admin_menu() {
         global $menu;
 
+        // Don't apply hiding when we're on the plugin's settings page
+        // so users can still see and manage hidden items
+        $is_plugin_page = isset($_GET['page']) && $_GET['page'] === 'wp-admin-organizer';
+
         // Add the logo at the top of the menu if one is set
         $this->add_admin_logo();
 
@@ -486,8 +490,8 @@ class WP_Admin_Organizer_Admin {
 
             // Loop through the saved menu order
             foreach ($saved_menu_order as $item_id) {
-                // Skip hidden items
-                if (in_array($item_id, $hidden_items)) {
+                // Skip hidden items ONLY if we're not on the plugin settings page
+                if (!$is_plugin_page && in_array($item_id, $hidden_items)) {
                     continue;
                 }
 
@@ -513,8 +517,8 @@ class WP_Admin_Organizer_Admin {
             // Add any remaining items to the end of the new menu
             foreach ($menu as $index => $item) {
                 if (isset($item[2]) && !in_array($item[2], $saved_menu_order)) {
-                    // Skip hidden items
-                    if (in_array($item[2], $hidden_items)) {
+                    // Skip hidden items ONLY if we're not on the plugin settings page
+                    if (!$is_plugin_page && in_array($item[2], $hidden_items)) {
                         continue;
                     }
 
@@ -534,8 +538,8 @@ class WP_Admin_Organizer_Admin {
             // Even if no menu order, still apply hiding and renaming
             foreach ($menu as $index => $item) {
                 if (isset($item[2])) {
-                    // Hide items
-                    if (in_array($item[2], $hidden_items)) {
+                    // Hide items ONLY if we're not on the plugin settings page
+                    if (!$is_plugin_page && in_array($item[2], $hidden_items)) {
                         unset($menu[$index]);
                         continue;
                     }
