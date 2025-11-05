@@ -4,6 +4,12 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] - 2025-11-05
+### Fixed
+- **Duplicate Drag Handle Icon**: Removed duplicate ::before pseudo-element from menu items
+- Menu items now correctly display only one drag handle icon
+- Separated menu item and separator item styles to prevent conflicts
+
 ## [1.4.1] - 2025-11-05
 ### Fixed
 - **Accordion Layout**: Submenu accordion now properly displays below menu item instead of inline
