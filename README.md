@@ -50,9 +50,25 @@ Want to add a translation? The plugin is translation-ready and includes a .pot f
 - WordPress 5.0 or higher
 - PHP 7.2 or higher
 
+## Current Version
+
+**v1.3.1** - Latest stable release with critical bug fixes and UX improvements
+
+### Recent Updates (v1.3.1)
+- 🐛 **CRITICAL FIX**: Hidden items now correctly disappear from WordPress admin sidebar
+- 🎨 Submenu display converted to accordion-style (collapsed by default)
+- 🎨 Added smooth animations and arrow indicator for submenu expansion
+- ✅ Better visual organization preventing interface clutter
+
+### Coming Soon (v1.4.0)
+- 🎯 User role-based menu configurations
+- 🎯 More icon customization options
+- 🎯 Additional keyboard shortcuts
+
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for a list of changes.
+See [CHANGELOG.md](CHANGELOG.md) for a complete list of changes.
+See [FEATURES.md](FEATURES.md) for detailed usage guide of all features.
 
 ## License
 

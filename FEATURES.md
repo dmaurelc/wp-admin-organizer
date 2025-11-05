@@ -1,20 +1,24 @@
 # WP Admin Organizer - Features Guide
 
-## Version 1.3.0 - Latest Features
+## Version 1.3.1 - Latest Features
 
-### 1. Reorganize Submenus 🆕
+### 1. Reorganize Submenus 🆕 (with Accordion)
 
 **How to use:**
 - When you have a menu item with submenus, they now appear in the configuration interface
-- Submenus are displayed in a nested list under their parent menu item
-- You can drag and drop submenu items to reorder them
+- Submenus are hidden by default in an accordion-style container
+- Click the arrow button next to a menu item to expand/collapse its submenus
+- Once expanded, you can drag and drop submenu items to reorder them
 - The submenu order you set will be applied to your WordPress admin menu
 - Each parent menu's submenus can be independently organized
 
 **Visual indicators:**
-- Submenus appear in a light gray box with indentation
+- Submenus appear in a light gray accordion box with indentation
+- Arrow indicator (⮟) shows expand/collapse state
+- Arrow rotates smoothly when expanding/collapsing
 - Each submenu item has a drag handle (⋮⋮) for reordering
 - Submenu items are clearly nested under their parent menu
+- Smooth CSS transitions with opacity and max-height animations
 
 **Use cases:**
 - Organize plugin submenus in a logical order
@@ -209,12 +213,18 @@ For bugs, feature requests, or questions:
 
 ---
 
-**Version**: 1.3.0
+**Version**: 1.3.1
 **Last Updated**: 2025-11-05
 
 ## Changelog
 
-### v1.3.0 (Current)
+### v1.3.1 (Current - Latest)
+- 🐛 **CRITICAL FIX**: Hidden items now correctly disappear from WordPress admin sidebar
+- 🎨 **IMPROVED**: Submenu display converted to accordion-style (collapsed by default)
+- 🎨 **IMPROVED**: Added smooth animations and arrow indicator for submenu expansion
+- ✅ **FIXED**: Better visual organization preventing interface clutter
+
+### v1.3.0
 - ✨ **NEW**: Reorganize Submenus with drag and drop
 - ✨ **NEW**: Custom Icons backend infrastructure
 - 🎨 **IMPROVED**: Enhanced export/import with submenu order and custom icons
