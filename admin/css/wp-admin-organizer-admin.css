@@ -193,6 +193,68 @@
   background: rgba(239, 68, 68, 0.5);
 }
 
+/* User Info Card */
+.user-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.user-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-info-row strong {
+  font-weight: 600;
+  min-width: 80px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.user-info-row span {
+  flex: 1;
+  text-align: right;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.user-role {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.config-status {
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.config-status.role {
+  background: rgba(34, 113, 177, 0.3);
+  color: #fff;
+}
+
+.config-status.personal {
+  background: rgba(74, 222, 128, 0.3);
+  color: #fff;
+}
+
 /* Personal Config Compact */
 .wp-admin-organizer-personal-config-compact {
   flex: 1;
@@ -1080,6 +1142,23 @@
   .btn-action-compact {
     flex: 1;
     justify-content: center;
+  }
+
+  .user-info-card {
+    margin-top: 8px;
+  }
+
+  .user-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-info-row strong {
+    min-width: auto;
+  }
+
+  .user-info-row span {
+    text-align: left;
   }
 }
 

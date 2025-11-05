@@ -94,6 +94,41 @@ if (!defined('WPINC')) {
                                     <?php endif; ?>
                                 </div>
                             </div>
+
+                            <!-- User Info Card -->
+                            <div class="user-info-card">
+                                <div class="user-info-row">
+                                    <strong><?php _e('User:', 'wp-admin-organizer'); ?></strong>
+                                    <span class="user-name"><?php
+                                        // Find and display current editing user info
+                                        foreach ($all_users as $user) {
+                                            if ($user->ID == $editing_user_id) {
+                                                echo esc_html($user->display_name);
+                                                break;
+                                            }
+                                        }
+                                    ?></span>
+                                </div>
+                                <div class="user-info-row">
+                                    <strong><?php _e('Role:', 'wp-admin-organizer'); ?></strong>
+                                    <span class="user-role"><?php
+                                        foreach ($all_users as $user) {
+                                            if ($user->ID == $editing_user_id) {
+                                                if (!empty($user->roles)) {
+                                                    echo esc_html(translate_user_role(ucfirst($user->roles[0])));
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    ?></span>
+                                </div>
+                                <div class="user-info-row">
+                                    <strong><?php _e('Config Status:', 'wp-admin-organizer'); ?></strong>
+                                    <span class="config-status <?php echo $has_personal_config ? 'personal' : 'role'; ?>">
+                                        <?php echo $has_personal_config ? '★ ' . __('Personal Config', 'wp-admin-organizer') : __('Using Role Config', 'wp-admin-organizer'); ?>
+                                    </span>
+                                </div>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
