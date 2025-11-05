@@ -624,3 +624,57 @@
   margin-bottom: 0;
   font-style: italic;
 }
+
+/* Favorite toggle button */
+.toggle-favorite {
+  color: #8c8f94;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-favorite:hover {
+  background: #fff3cd;
+  color: #f1c40f;
+}
+
+.toggle-favorite .dashicons {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Favorite menu items */
+.wp-admin-organizer-menu-item.favorite {
+  border-left: 3px solid #f1c40f;
+  background: #fffbea;
+}
+
+.wp-admin-organizer-menu-item.favorite .toggle-favorite {
+  color: #f1c40f;
+}
+
+/* Favorites separator in admin menu */
+.wp-admin-organizer-favorites-separator::before {
+  content: "⭐ FAVORITES";
+  display: block;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #f1c40f;
+  background: rgba(241, 196, 15, 0.1);
+  border-radius: 3px;
+  margin: 5px 10px;
+}
+
+/* Favorite items in admin menu */
+.wp-admin-organizer-favorite-item {
+  background: rgba(241, 196, 15, 0.05) !important;
+}

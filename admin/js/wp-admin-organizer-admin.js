@@ -214,6 +214,28 @@
       }
     );
 
+    // Handle favorite toggle button click
+    $(".wp-admin-organizer-menu-list").on(
+      "click",
+      ".toggle-favorite",
+      function (e) {
+        e.preventDefault();
+        var $item = $(this).closest(".wp-admin-organizer-menu-item");
+        $item.toggleClass("favorite");
+
+        // Update button icon/text
+        if ($item.hasClass("favorite")) {
+          $(this)
+            .html('<span class="dashicons dashicons-star-filled"></span>')
+            .attr("title", "Remove from Favorites");
+        } else {
+          $(this)
+            .html('<span class="dashicons dashicons-star-empty"></span>')
+            .attr("title", "Add to Favorites");
+        }
+      }
+    );
+
     // Handle menu item title click for inline editing (rename functionality)
     $(".wp-admin-organizer-menu-list").on(
       "click",
@@ -444,6 +466,12 @@
       }
     });
 
+    // Get favorite items
+    var favoriteItems = [];
+    $(".wp-admin-organizer-menu-item.favorite").each(function () {
+      favoriteItems.push($(this).data("menu-id"));
+    });
+
     // Send the AJAX request
     $.ajax({
       url: wp_admin_organizer.ajax_url,
@@ -455,6 +483,7 @@
         separators: separators,
         hidden_items: hiddenItems,
         renamed_items: renamedItems,
+        favorite_items: favoriteItems,
       },
       success: function (response) {
         if (response.success) {

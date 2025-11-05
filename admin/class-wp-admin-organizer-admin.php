@@ -151,6 +151,12 @@ class WP_Admin_Organizer_Admin {
             'wp_admin_organizer_renamed_items',
             array('sanitize_callback' => array($this, 'sanitize_renamed_items'))
         );
+
+        register_setting(
+            'wp_admin_organizer_settings',
+            'wp_admin_organizer_favorite_items',
+            array('sanitize_callback' => array($this, 'sanitize_menu_order'))
+        );
     }
 
     /**
@@ -255,6 +261,9 @@ class WP_Admin_Organizer_Admin {
         // Get renamed items
         $renamed_items = get_option('wp_admin_organizer_renamed_items', array());
 
+        // Get favorite items
+        $favorite_items = get_option('wp_admin_organizer_favorite_items', array());
+
         include_once WP_ADMIN_ORGANIZER_PLUGIN_DIR . 'admin/partials/wp-admin-organizer-admin-display.php';
     }
 
@@ -309,6 +318,15 @@ class WP_Admin_Organizer_Admin {
 
         // Save renamed items
         update_option('wp_admin_organizer_renamed_items', $renamed_items);
+
+        // Get favorite items from POST data
+        $favorite_items = isset($_POST['favorite_items']) ? $_POST['favorite_items'] : array();
+
+        // Sanitize favorite items
+        $favorite_items = $this->sanitize_menu_order($favorite_items);
+
+        // Save favorite items
+        update_option('wp_admin_organizer_favorite_items', $favorite_items);
 
         wp_send_json_success('Menu order saved successfully');
     }
@@ -398,6 +416,7 @@ class WP_Admin_Organizer_Admin {
             'logo' => get_option('wp_admin_organizer_logo', ''),
             'hidden_items' => get_option('wp_admin_organizer_hidden_items', array()),
             'renamed_items' => get_option('wp_admin_organizer_renamed_items', array()),
+            'favorite_items' => get_option('wp_admin_organizer_favorite_items', array()),
             'version' => WP_ADMIN_ORGANIZER_VERSION,
             'exported_at' => current_time('mysql')
         );
@@ -456,6 +475,11 @@ class WP_Admin_Organizer_Admin {
             update_option('wp_admin_organizer_renamed_items', $this->sanitize_renamed_items($config_data['renamed_items']));
         }
 
+        // Import favorite items
+        if (isset($config_data['favorite_items'])) {
+            update_option('wp_admin_organizer_favorite_items', $this->sanitize_menu_order($config_data['favorite_items']));
+        }
+
         wp_send_json_success('Configuration imported successfully');
     }
 
@@ -483,10 +507,71 @@ class WP_Admin_Organizer_Admin {
         // Get renamed items
         $renamed_items = get_option('wp_admin_organizer_renamed_items', array());
 
+        // Get favorite items
+        $favorite_items = get_option('wp_admin_organizer_favorite_items', array());
+
         // If we have a saved menu order, reorganize the menu
         if (!empty($saved_menu_order)) {
             $new_menu = array();
             $position = 10;
+
+            // Add favorite items at the top if any exist
+            if (!empty($favorite_items)) {
+                // Add favorites separator
+                $new_menu[$position] = array(
+                    __('Favorites', 'wp-admin-organizer'),
+                    'read',
+                    'favorites-separator-header',
+                    '',
+                    'wp-menu-separator wp-admin-organizer-favorites-separator'
+                );
+                $position++;
+
+                // Add each favorite item
+                foreach ($favorite_items as $fav_item_id) {
+                    // Skip if item is hidden and we're not on plugin page
+                    if (!$is_plugin_page && in_array($fav_item_id, $hidden_items)) {
+                        continue;
+                    }
+
+                    // Find the favorite item in the menu
+                    foreach ($menu as $index => $item) {
+                        if (isset($item[2]) && $item[2] === $fav_item_id) {
+                            // Clone the item for favorites
+                            $fav_item = $item;
+
+                            // Apply renamed title if exists
+                            if (isset($renamed_items[$fav_item_id])) {
+                                $fav_item[0] = $renamed_items[$fav_item_id];
+                            }
+
+                            // Add star icon before the title
+                            $fav_item[0] = '<span class="dashicons dashicons-star-filled" style="font-size: 17px; margin-right: 5px; color: #f1c40f;"></span>' . $fav_item[0];
+
+                            // Add custom class to identify favorites
+                            if (isset($fav_item[4])) {
+                                $fav_item[4] .= ' wp-admin-organizer-favorite-item';
+                            } else {
+                                $fav_item[4] = 'wp-admin-organizer-favorite-item';
+                            }
+
+                            $new_menu[$position] = $fav_item;
+                            $position++;
+                            break;
+                        }
+                    }
+                }
+
+                // Add separator after favorites
+                $new_menu[$position] = array(
+                    '',
+                    'read',
+                    'favorites-separator-bottom',
+                    '',
+                    'wp-menu-separator'
+                );
+                $position += 10; // Larger gap after favorites section
+            }
 
             // Loop through the saved menu order
             foreach ($saved_menu_order as $item_id) {
