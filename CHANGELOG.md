@@ -4,6 +4,32 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-11-05
+### Added
+- **Favorites/Quick Access functionality**: Mark menu items as favorites with star icon
+- Favorites section at the top of admin menu for quick access
+- Star toggle button for each menu item in configuration
+- Visual indicators for favorite items (gold star, special styling)
+- Favorites included in export/import functionality
+- Dedicated "FAVORITES" section in admin menu with separator
+
+### Fixed
+- Hidden items now remain visible in configuration page for reactivation
+- Inline editing can now be cancelled with ESC key
+- Prevented multiple inline editors from opening simultaneously
+- Improved inline editor UX with better keyboard handling (Enter to save, ESC to cancel)
+
+### Changed
+- Enhanced menu reorganization to support favorites at the top
+- Improved plugin description to reflect new features
+
+### Technical
+- Added `wp_admin_organizer_favorite_items` option for storing favorite items
+- Enhanced `reorganize_admin_menu()` to display favorites section
+- Updated AJAX save to include favorite items
+- Added favorite toggle handler in JavaScript
+- New CSS styles for favorite items and toggles
+
 ## [1.1.0] - 2025-11-05
 ### Added
 - Hide/Show menu items functionality with visibility toggle button
