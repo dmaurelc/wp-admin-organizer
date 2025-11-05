@@ -4,6 +4,36 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-11-05
+### Added
+- **Role-Based Configuration Profiles** 🎯 - Configure different menu layouts for each WordPress user role
+- Role selector in configuration page to switch between Administrator, Editor, Author, etc.
+- Each role maintains independent configurations (menu order, hidden items, favorites, etc.)
+- **Search/Filter Menu Items** 🔍 - Real-time search box to filter menu items in configuration
+- Search by menu title or menu ID for quick access in sites with many plugins
+- Visual feedback with instant filtering as you type
+
+### Changed
+- Configuration system refactored to support role-based profiles
+- Export/Import now handles multiple role configurations
+- Backward compatibility maintained - old exports automatically migrate to new format
+- Enhanced UI with role selector and search field in header
+
+### Technical
+- Added `wp_admin_organizer_role_configs` option storing all role configurations
+- New helper methods: `get_role_config()`, `save_role_config()`, `get_all_roles()`
+- `reorganize_admin_menu()` now uses current user's role configuration
+- `save_menu_order()` updated to save per role with POST['role'] parameter
+- Export format includes `role_configs` array with all role configurations
+- Import detects format version and migrates old exports to new structure
+- JavaScript handlers for role selector change and real-time search filtering
+- CSS styles for role selector box and search container
+
+### Migration
+- Existing configurations automatically migrated to 'administrator' role on first load
+- Old export files can be imported and will be assigned to administrator role
+- No data loss during upgrade - all existing configurations preserved
+
 ## [1.3.1] - 2025-11-05
 ### Fixed
 - **CRITICAL**: Hidden items now correctly disappear from WordPress admin sidebar

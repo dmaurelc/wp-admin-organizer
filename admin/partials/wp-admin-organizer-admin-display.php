@@ -17,13 +17,34 @@ if (!defined('WPINC')) {
 
 <div class="wrap wp-admin-organizer-container">
     <div class="wp-admin-organizer-header">
-        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-        <p><?php _e('Drag and drop menu items to reorder them. You can also add separators between items.', 'wp-admin-organizer'); ?></p>
+        <div class="wp-admin-organizer-header-top">
+            <div class="wp-admin-organizer-header-title">
+                <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+                <p><?php _e('Drag and drop menu items to reorder them. You can also add separators between items.', 'wp-admin-organizer'); ?></p>
+            </div>
+            <div class="wp-admin-organizer-role-selector">
+                <label for="role-selector"><?php _e('Configure menu for role:', 'wp-admin-organizer'); ?></label>
+                <select id="role-selector" name="role-selector">
+                    <?php foreach ($available_roles as $role_key => $role_name) : ?>
+                        <option value="<?php echo esc_attr($role_key); ?>" <?php selected($editing_role, $role_key); ?>>
+                            <?php echo esc_html($role_name); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <span class="description"><?php _e('Each role can have its own menu configuration.', 'wp-admin-organizer'); ?></span>
+            </div>
+        </div>
     </div>
     
     <div class="wp-admin-organizer-content">
         <div class="wp-admin-organizer-menu-items">
-            <h2><?php _e('Menu Items', 'wp-admin-organizer'); ?></h2>
+            <div class="wp-admin-organizer-menu-header">
+                <h2><?php _e('Menu Items', 'wp-admin-organizer'); ?></h2>
+                <div class="wp-admin-organizer-search-container">
+                    <input type="text" id="menu-search" placeholder="<?php _e('Search menu items...', 'wp-admin-organizer'); ?>" class="widefat">
+                    <span class="dashicons dashicons-search"></span>
+                </div>
+            </div>
             
             <div class="wp-admin-organizer-menu-list">
             <?php

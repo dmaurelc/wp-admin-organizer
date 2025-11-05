@@ -53,6 +53,89 @@ class WP_Admin_Organizer_Admin {
     }
 
     /**
+     * Get configuration for a specific role or current user's role.
+     *
+     * @since    1.4.0
+     * @param    string    $role    Optional. Role to get config for. Defaults to current user's role.
+     * @param    string    $key     Optional. Specific config key to get. If empty, returns all config.
+     * @return   mixed              Configuration value(s)
+     */
+    private function get_role_config($role = null, $key = null) {
+        // If no role specified, use current user's primary role
+        if ($role === null) {
+            $user = wp_get_current_user();
+            $roles = $user->roles;
+            $role = !empty($roles) ? $roles[0] : 'administrator';
+        }
+
+        // Get all role configurations
+        $role_configs = get_option('wp_admin_organizer_role_configs', array());
+
+        // If no config exists for this role, try to migrate from old global options
+        if (!isset($role_configs[$role])) {
+            $role_configs[$role] = array(
+                'menu_order' => get_option('wp_admin_organizer_menu_order', array()),
+                'separators' => get_option('wp_admin_organizer_separators', array()),
+                'hidden_items' => get_option('wp_admin_organizer_hidden_items', array()),
+                'renamed_items' => get_option('wp_admin_organizer_renamed_items', array()),
+                'favorite_items' => get_option('wp_admin_organizer_favorite_items', array()),
+                'submenu_order' => get_option('wp_admin_organizer_submenu_order', array()),
+                'custom_icons' => get_option('wp_admin_organizer_custom_icons', array()),
+            );
+        }
+
+        $config = isset($role_configs[$role]) ? $role_configs[$role] : array();
+
+        // If specific key requested, return that
+        if ($key !== null) {
+            return isset($config[$key]) ? $config[$key] : array();
+        }
+
+        return $config;
+    }
+
+    /**
+     * Save configuration for a specific role.
+     *
+     * @since    1.4.0
+     * @param    string    $role      Role to save config for
+     * @param    string    $key       Config key to save
+     * @param    mixed     $value     Value to save
+     * @return   bool                 True on success, false on failure
+     */
+    private function save_role_config($role, $key, $value) {
+        // Get all role configurations
+        $role_configs = get_option('wp_admin_organizer_role_configs', array());
+
+        // Initialize role config if it doesn't exist
+        if (!isset($role_configs[$role])) {
+            $role_configs[$role] = array();
+        }
+
+        // Set the value
+        $role_configs[$role][$key] = $value;
+
+        // Save back to database
+        return update_option('wp_admin_organizer_role_configs', $role_configs);
+    }
+
+    /**
+     * Get all available WordPress roles.
+     *
+     * @since    1.4.0
+     * @return   array    Array of role names
+     */
+    private function get_all_roles() {
+        global $wp_roles;
+
+        if (!isset($wp_roles)) {
+            $wp_roles = new WP_Roles();
+        }
+
+        return $wp_roles->get_names();
+    }
+
+    /**
      * Register the stylesheets for the admin area.
      *
      * @since    1.0.0
@@ -286,26 +369,28 @@ class WP_Admin_Organizer_Admin {
         // Get the current admin menu and submenus
         global $menu, $submenu;
 
-        // Get saved menu order
-        $saved_menu_order = get_option('wp_admin_organizer_menu_order', array());
+        // Get all available roles
+        $available_roles = $this->get_all_roles();
 
-        // Get saved separators
-        $saved_separators = get_option('wp_admin_organizer_separators', array());
+        // Get the role we're currently editing (from URL or default to administrator)
+        $editing_role = isset($_GET['role']) && !empty($_GET['role']) ? sanitize_text_field($_GET['role']) : 'administrator';
 
-        // Get hidden items
-        $hidden_items = get_option('wp_admin_organizer_hidden_items', array());
+        // Make sure the role exists
+        if (!array_key_exists($editing_role, $available_roles)) {
+            $editing_role = 'administrator';
+        }
 
-        // Get renamed items
-        $renamed_items = get_option('wp_admin_organizer_renamed_items', array());
+        // Get configuration for the selected role
+        $role_config = $this->get_role_config($editing_role);
 
-        // Get favorite items
-        $favorite_items = get_option('wp_admin_organizer_favorite_items', array());
-
-        // Get saved submenu order
-        $saved_submenu_order = get_option('wp_admin_organizer_submenu_order', array());
-
-        // Get custom icons
-        $custom_icons = get_option('wp_admin_organizer_custom_icons', array());
+        // Extract configuration values
+        $saved_menu_order = isset($role_config['menu_order']) ? $role_config['menu_order'] : array();
+        $saved_separators = isset($role_config['separators']) ? $role_config['separators'] : array();
+        $hidden_items = isset($role_config['hidden_items']) ? $role_config['hidden_items'] : array();
+        $renamed_items = isset($role_config['renamed_items']) ? $role_config['renamed_items'] : array();
+        $favorite_items = isset($role_config['favorite_items']) ? $role_config['favorite_items'] : array();
+        $saved_submenu_order = isset($role_config['submenu_order']) ? $role_config['submenu_order'] : array();
+        $custom_icons = isset($role_config['custom_icons']) ? $role_config['custom_icons'] : array();
 
         include_once WP_ADMIN_ORGANIZER_PLUGIN_DIR . 'admin/partials/wp-admin-organizer-admin-display.php';
     }
@@ -326,14 +411,23 @@ class WP_Admin_Organizer_Admin {
             wp_send_json_error('Permission denied');
         }
 
+        // Get the role we're saving for (from POST or default to administrator)
+        $role = isset($_POST['role']) && !empty($_POST['role']) ? sanitize_text_field($_POST['role']) : 'administrator';
+
+        // Verify role exists
+        $all_roles = $this->get_all_roles();
+        if (!array_key_exists($role, $all_roles)) {
+            wp_send_json_error('Invalid role');
+        }
+
         // Get the menu order from the POST data
         $menu_order = isset($_POST['menu_order']) ? $_POST['menu_order'] : array();
 
         // Sanitize the menu order
         $menu_order = $this->sanitize_menu_order($menu_order);
 
-        // Save the menu order
-        update_option('wp_admin_organizer_menu_order', $menu_order);
+        // Save the menu order for this role
+        $this->save_role_config($role, 'menu_order', $menu_order);
 
         // Get the separators from the POST data
         $separators = isset($_POST['separators']) ? $_POST['separators'] : array();
@@ -341,8 +435,8 @@ class WP_Admin_Organizer_Admin {
         // Sanitize the separators
         $separators = $this->sanitize_separators($separators);
 
-        // Save the separators
-        update_option('wp_admin_organizer_separators', $separators);
+        // Save the separators for this role
+        $this->save_role_config($role, 'separators', $separators);
 
         // Get hidden items from POST data
         $hidden_items = isset($_POST['hidden_items']) ? $_POST['hidden_items'] : array();
@@ -350,8 +444,8 @@ class WP_Admin_Organizer_Admin {
         // Sanitize hidden items
         $hidden_items = $this->sanitize_menu_order($hidden_items);
 
-        // Save hidden items
-        update_option('wp_admin_organizer_hidden_items', $hidden_items);
+        // Save hidden items for this role
+        $this->save_role_config($role, 'hidden_items', $hidden_items);
 
         // Get renamed items from POST data
         $renamed_items = isset($_POST['renamed_items']) ? $_POST['renamed_items'] : array();
@@ -359,8 +453,8 @@ class WP_Admin_Organizer_Admin {
         // Sanitize renamed items
         $renamed_items = $this->sanitize_renamed_items($renamed_items);
 
-        // Save renamed items
-        update_option('wp_admin_organizer_renamed_items', $renamed_items);
+        // Save renamed items for this role
+        $this->save_role_config($role, 'renamed_items', $renamed_items);
 
         // Get favorite items from POST data
         $favorite_items = isset($_POST['favorite_items']) ? $_POST['favorite_items'] : array();
@@ -368,8 +462,8 @@ class WP_Admin_Organizer_Admin {
         // Sanitize favorite items
         $favorite_items = $this->sanitize_menu_order($favorite_items);
 
-        // Save favorite items
-        update_option('wp_admin_organizer_favorite_items', $favorite_items);
+        // Save favorite items for this role
+        $this->save_role_config($role, 'favorite_items', $favorite_items);
 
         // Get submenu order from POST data
         $submenu_order = isset($_POST['submenu_order']) ? $_POST['submenu_order'] : array();
@@ -377,8 +471,8 @@ class WP_Admin_Organizer_Admin {
         // Sanitize submenu order
         $submenu_order = $this->sanitize_submenu_order($submenu_order);
 
-        // Save submenu order
-        update_option('wp_admin_organizer_submenu_order', $submenu_order);
+        // Save submenu order for this role
+        $this->save_role_config($role, 'submenu_order', $submenu_order);
 
         // Get custom icons from POST data
         $custom_icons = isset($_POST['custom_icons']) ? $_POST['custom_icons'] : array();
@@ -386,8 +480,8 @@ class WP_Admin_Organizer_Admin {
         // Sanitize custom icons
         $custom_icons = $this->sanitize_renamed_items($custom_icons);
 
-        // Save custom icons
-        update_option('wp_admin_organizer_custom_icons', $custom_icons);
+        // Save custom icons for this role
+        $this->save_role_config($role, 'custom_icons', $custom_icons);
 
         wp_send_json_success('Menu order saved successfully');
     }
@@ -470,16 +564,13 @@ class WP_Admin_Organizer_Admin {
             wp_send_json_error('Permission denied');
         }
 
-        // Get all plugin options
+        // Get all role configurations
+        $role_configs = get_option('wp_admin_organizer_role_configs', array());
+
+        // Build configuration export with role-based configs
         $configuration = array(
-            'menu_order' => get_option('wp_admin_organizer_menu_order', array()),
-            'separators' => get_option('wp_admin_organizer_separators', array()),
+            'role_configs' => $role_configs,
             'logo' => get_option('wp_admin_organizer_logo', ''),
-            'hidden_items' => get_option('wp_admin_organizer_hidden_items', array()),
-            'renamed_items' => get_option('wp_admin_organizer_renamed_items', array()),
-            'favorite_items' => get_option('wp_admin_organizer_favorite_items', array()),
-            'submenu_order' => get_option('wp_admin_organizer_submenu_order', array()),
-            'custom_icons' => get_option('wp_admin_organizer_custom_icons', array()),
             'version' => WP_ADMIN_ORGANIZER_VERSION,
             'exported_at' => current_time('mysql')
         );
@@ -513,44 +604,57 @@ class WP_Admin_Organizer_Admin {
             wp_send_json_error('Invalid configuration data');
         }
 
-        // Import menu order
-        if (isset($config_data['menu_order'])) {
-            update_option('wp_admin_organizer_menu_order', $this->sanitize_menu_order($config_data['menu_order']));
-        }
-
-        // Import separators
-        if (isset($config_data['separators'])) {
-            update_option('wp_admin_organizer_separators', $this->sanitize_separators($config_data['separators']));
-        }
-
-        // Import logo
+        // Import logo (global setting)
         if (isset($config_data['logo'])) {
             update_option('wp_admin_organizer_logo', esc_url_raw($config_data['logo']));
         }
 
-        // Import hidden items
-        if (isset($config_data['hidden_items'])) {
-            update_option('wp_admin_organizer_hidden_items', $this->sanitize_menu_order($config_data['hidden_items']));
-        }
+        // Check if this is new format (with role_configs) or old format
+        if (isset($config_data['role_configs']) && is_array($config_data['role_configs'])) {
+            // New format: Import role configurations directly
+            $role_configs = $config_data['role_configs'];
 
-        // Import renamed items
-        if (isset($config_data['renamed_items'])) {
-            update_option('wp_admin_organizer_renamed_items', $this->sanitize_renamed_items($config_data['renamed_items']));
-        }
+            // Sanitize each role configuration
+            foreach ($role_configs as $role => $config) {
+                if (isset($config['menu_order'])) {
+                    $role_configs[$role]['menu_order'] = $this->sanitize_menu_order($config['menu_order']);
+                }
+                if (isset($config['separators'])) {
+                    $role_configs[$role]['separators'] = $this->sanitize_separators($config['separators']);
+                }
+                if (isset($config['hidden_items'])) {
+                    $role_configs[$role]['hidden_items'] = $this->sanitize_menu_order($config['hidden_items']);
+                }
+                if (isset($config['renamed_items'])) {
+                    $role_configs[$role]['renamed_items'] = $this->sanitize_renamed_items($config['renamed_items']);
+                }
+                if (isset($config['favorite_items'])) {
+                    $role_configs[$role]['favorite_items'] = $this->sanitize_menu_order($config['favorite_items']);
+                }
+                if (isset($config['submenu_order'])) {
+                    $role_configs[$role]['submenu_order'] = $this->sanitize_submenu_order($config['submenu_order']);
+                }
+                if (isset($config['custom_icons'])) {
+                    $role_configs[$role]['custom_icons'] = $this->sanitize_renamed_items($config['custom_icons']);
+                }
+            }
 
-        // Import favorite items
-        if (isset($config_data['favorite_items'])) {
-            update_option('wp_admin_organizer_favorite_items', $this->sanitize_menu_order($config_data['favorite_items']));
-        }
+            update_option('wp_admin_organizer_role_configs', $role_configs);
+        } else {
+            // Old format: Migrate to new format by assigning to administrator role
+            $role_configs = get_option('wp_admin_organizer_role_configs', array());
 
-        // Import submenu order
-        if (isset($config_data['submenu_order'])) {
-            update_option('wp_admin_organizer_submenu_order', $this->sanitize_submenu_order($config_data['submenu_order']));
-        }
+            $role_configs['administrator'] = array(
+                'menu_order' => isset($config_data['menu_order']) ? $this->sanitize_menu_order($config_data['menu_order']) : array(),
+                'separators' => isset($config_data['separators']) ? $this->sanitize_separators($config_data['separators']) : array(),
+                'hidden_items' => isset($config_data['hidden_items']) ? $this->sanitize_menu_order($config_data['hidden_items']) : array(),
+                'renamed_items' => isset($config_data['renamed_items']) ? $this->sanitize_renamed_items($config_data['renamed_items']) : array(),
+                'favorite_items' => isset($config_data['favorite_items']) ? $this->sanitize_menu_order($config_data['favorite_items']) : array(),
+                'submenu_order' => isset($config_data['submenu_order']) ? $this->sanitize_submenu_order($config_data['submenu_order']) : array(),
+                'custom_icons' => isset($config_data['custom_icons']) ? $this->sanitize_renamed_items($config_data['custom_icons']) : array(),
+            );
 
-        // Import custom icons
-        if (isset($config_data['custom_icons'])) {
-            update_option('wp_admin_organizer_custom_icons', $this->sanitize_renamed_items($config_data['custom_icons']));
+            update_option('wp_admin_organizer_role_configs', $role_configs);
         }
 
         wp_send_json_success('Configuration imported successfully');
@@ -571,20 +675,15 @@ class WP_Admin_Organizer_Admin {
         // Add the logo at the top of the menu if one is set
         $this->add_admin_logo();
 
-        // Get saved menu order
-        $saved_menu_order = get_option('wp_admin_organizer_menu_order', array());
+        // Get configuration for current user's role
+        $role_config = $this->get_role_config();
 
-        // Get hidden items
-        $hidden_items = get_option('wp_admin_organizer_hidden_items', array());
-
-        // Get renamed items
-        $renamed_items = get_option('wp_admin_organizer_renamed_items', array());
-
-        // Get favorite items
-        $favorite_items = get_option('wp_admin_organizer_favorite_items', array());
-
-        // Get custom icons
-        $custom_icons = get_option('wp_admin_organizer_custom_icons', array());
+        // Extract configuration values
+        $saved_menu_order = isset($role_config['menu_order']) ? $role_config['menu_order'] : array();
+        $hidden_items = isset($role_config['hidden_items']) ? $role_config['hidden_items'] : array();
+        $renamed_items = isset($role_config['renamed_items']) ? $role_config['renamed_items'] : array();
+        $favorite_items = isset($role_config['favorite_items']) ? $role_config['favorite_items'] : array();
+        $custom_icons = isset($role_config['custom_icons']) ? $role_config['custom_icons'] : array();
 
         // If we have a saved menu order, reorganize the menu
         if (!empty($saved_menu_order)) {
@@ -766,9 +865,9 @@ class WP_Admin_Organizer_Admin {
      */
     private function add_menu_separators() {
         global $menu;
-        
-        // Get saved separators
-        $separators = get_option('wp_admin_organizer_separators', array());
+
+        // Get saved separators for current user's role
+        $separators = $this->get_role_config(null, 'separators');
         
         // If we have separators, add them to the menu
         if (!empty($separators)) {
@@ -878,8 +977,8 @@ class WP_Admin_Organizer_Admin {
     public function reorganize_submenus() {
         global $submenu;
 
-        // Get saved submenu order
-        $saved_submenu_order = get_option('wp_admin_organizer_submenu_order', array());
+        // Get saved submenu order for current user's role
+        $saved_submenu_order = $this->get_role_config(null, 'submenu_order');
 
         if (empty($saved_submenu_order) || !is_array($submenu)) {
             return;
