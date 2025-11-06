@@ -4,6 +4,23 @@ All notable changes to WP Admin Organizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.4] - 2025-11-06
+### Added
+- **User Search/Filter Functionality** 🔍 - Real-time search when editing users
+- Search input field above user selector in "By User" mode
+- Filter users by display name (e.g., "John Doe")
+- Filter users by username (e.g., "jdoe")
+- Filter users by role (e.g., "administrator")
+- Case-insensitive instant filtering as you type
+- Clear search field to see all users again
+- Enhanced dropdown with size attribute for better visibility
+
+### Improved
+- User selector now displays in multi-line mode (size="5") for better UX
+- Quick selection: double-click on user to load their configuration
+- Search field styling matches modern design theme
+- Better experience for sites with many users (50+, 100+, etc.)
+
 ## [1.5.3] - 2025-11-05
 ### Fixed
 - **User Editing Visibility** - Added user information card to show active user details
