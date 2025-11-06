@@ -87,6 +87,39 @@
       window.location.href = newUrl;
     });
 
+    // Handle user search/filter
+    $("#user-search").on("keyup", function () {
+      var searchTerm = $(this).val().toLowerCase().trim();
+      var $userSelector = $("#user-selector");
+      var $options = $userSelector.find("option");
+
+      if (searchTerm === "") {
+        // Show all options when search is empty
+        $options.show();
+      } else {
+        // Filter options
+        $options.each(function () {
+          var $option = $(this);
+          var displayName = $option.data("displayname").toString().toLowerCase();
+          var userName = $option.data("username").toString().toLowerCase();
+          var role = $option.data("role").toString().toLowerCase();
+          var optionText = $option.text().toLowerCase();
+
+          // Check if any of the fields contain the search term
+          if (
+            displayName.indexOf(searchTerm) > -1 ||
+            userName.indexOf(searchTerm) > -1 ||
+            role.indexOf(searchTerm) > -1 ||
+            optionText.indexOf(searchTerm) > -1
+          ) {
+            $option.show();
+          } else {
+            $option.hide();
+          }
+        });
+      }
+    });
+
     // Handle user selector change
     $("#user-selector").on("change", function () {
       var selectedUserId = $(this).val();
@@ -105,6 +138,11 @@
 
       // Reload page with new user
       window.location.href = newUrl;
+    });
+
+    // Handle double-click on user selector for quick selection
+    $("#user-selector").on("dblclick", function () {
+      $(this).trigger("change");
     });
 
     // Handle menu search/filter

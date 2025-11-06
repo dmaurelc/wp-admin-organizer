@@ -60,11 +60,19 @@ if (!defined('WPINC')) {
                                 </select>
                             </div>
                         <?php elseif ($config_mode === 'user') : ?>
-                            <!-- User Selector -->
+                            <!-- User Selector with Search -->
                             <div class="selector-inline">
-                                <select id="user-selector" name="user-selector" class="select-compact">
+                                <div class="user-search-container">
+                                    <input type="text" id="user-search" placeholder="<?php _e('Search users...', 'wp-admin-organizer'); ?>" class="user-search-input">
+                                    <span class="dashicons dashicons-search search-icon"></span>
+                                </div>
+                                <select id="user-selector" name="user-selector" class="select-compact" size="5">
                                     <?php foreach ($all_users as $user) : ?>
-                                        <option value="<?php echo esc_attr($user->ID); ?>" <?php selected($editing_user_id, $user->ID); ?>>
+                                        <option value="<?php echo esc_attr($user->ID); ?>"
+                                                <?php selected($editing_user_id, $user->ID); ?>
+                                                data-username="<?php echo esc_attr($user->user_login); ?>"
+                                                data-displayname="<?php echo esc_attr($user->display_name); ?>"
+                                                data-role="<?php echo !empty($user->roles) ? esc_attr($user->roles[0]) : ''; ?>">
                                             <?php
                                             echo esc_html($user->display_name);
                                             if (!empty($user->roles)) {
